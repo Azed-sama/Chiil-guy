@@ -1,3 +1,4 @@
+import { cache } from 'react';
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   const supabase = createClient()
 
