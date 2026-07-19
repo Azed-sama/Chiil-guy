@@ -6,9 +6,10 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ---------------------------------------------------------
-  // Espace client : authentification requise
+  // Espace client : authentification requise (compte réel, pas une
+  // simple session anonyme créée pour le guest checkout)
   // ---------------------------------------------------------
-  if (pathname.startsWith('/account') && !user) {
+  if (pathname.startsWith('/account') && (!user || user.is_anonymous)) {
     const url = request.nextUrl.clone()
     url.pathname = '/connexion'
     url.searchParams.set('redirect', pathname)
@@ -22,7 +23,7 @@ export async function middleware(request: NextRequest) {
   // protège les données elles-mêmes en dernier recours.
   // ---------------------------------------------------------
   if (pathname.startsWith('/admin')) {
-    if (!user) {
+    if (!user || user.is_anonymous) {
       const url = request.nextUrl.clone()
       url.pathname = '/connexion'
       url.searchParams.set('redirect', pathname)

@@ -159,8 +159,7 @@ export interface Database {
           shipping_cost: number
           total_amount: number
           shipping_address: Json
-          billing_address: Json | null
-          contact_email: string
+          contact_email: string | null
           contact_phone: string | null
           stripe_checkout_session_id: string | null
           stripe_payment_intent_id: string | null
@@ -176,8 +175,7 @@ export interface Database {
           shipping_cost?: number
           total_amount: number
           shipping_address: Json
-          billing_address?: Json | null
-          contact_email: string
+          contact_email?: string | null
           contact_phone?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
