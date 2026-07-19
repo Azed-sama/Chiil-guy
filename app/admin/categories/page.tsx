@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: 'Catégories — Administration' }
 
 export default async function AdminCategoriesPage() {
   const categories = await getAllCategoriesAdmin()
-
+  
   return (
     <main className="container max-w-3xl py-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -24,8 +24,10 @@ export default async function AdminCategoriesPage() {
         </div>
         <Button asChild size="lg" className="w-full sm:w-auto">
           <Link href="/admin/categories/nouvelle">
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Ajouter une catégorie
+            <span className="flex items-center gap-2">
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Ajouter une catégorie
+            </span>
           </Link>
         </Button>
       </div>

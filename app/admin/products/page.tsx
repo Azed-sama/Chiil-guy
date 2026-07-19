@@ -18,7 +18,7 @@ function StockBadge({ stock }: { stock: number }) {
 
 export default async function AdminProductsPage() {
   const products = await getAllProducts()
-
+  
   return (
     <main className="container py-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -30,8 +30,10 @@ export default async function AdminProductsPage() {
         </div>
         <Button asChild size="lg" className="w-full sm:w-auto">
           <Link href="/admin/products/nouveau">
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Ajouter un produit
+            <span className="flex items-center gap-2">
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Ajouter un produit
+            </span>
           </Link>
         </Button>
       </div>

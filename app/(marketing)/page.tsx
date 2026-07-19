@@ -56,8 +56,10 @@ export default async function HomePage() {
           <div className="flex animate-fade-in-up flex-col gap-3 [animation-delay:225ms] sm:flex-row">
             <Button asChild size="lg">
               <Link href="/produits">
-                Découvrir la collection
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                <span className="flex items-center gap-2">
+                  Découvrir la collection
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </span>
               </Link>
             </Button>
             <Button
@@ -67,8 +69,10 @@ export default async function HomePage() {
               className="border-paper/25 bg-transparent text-paper hover:bg-paper/10"
             >
               <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                Discuter sur WhatsApp
+                <span className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                  Discuter sur WhatsApp
+                </span>
               </a>
             </Button>
           </div>
@@ -181,8 +185,10 @@ export default async function HomePage() {
             className="border-accent-foreground/30 bg-transparent text-accent-foreground hover:bg-accent-foreground/10"
           >
             <Link href="/produits">
-              Voir tous les produits
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              <span className="flex items-center gap-2">
+                Voir tous les produits
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </span>
             </Link>
           </Button>
         </div>

@@ -21,7 +21,6 @@ function CartButton({ cartCount }: { cartCount: number }) {
   const previousCount = useRef(cartCount)
   
   useEffect(() => {
-    // Pulse uniquement quand le panier grossit (pas au premier rendu, pas au retrait)
     if (cartCount > previousCount.current) {
       setPulse(true)
       const timeout = setTimeout(() => setPulse(false), 500)
@@ -40,18 +39,20 @@ function CartButton({ cartCount }: { cartCount: number }) {
       aria-label={`Panier${cartCount > 0 ? ` — ${cartCount} article${cartCount > 1 ? 's' : ''}` : ''}`}
     >
       <Link href="/panier">
-        <ShoppingBag className={cn('h-4 w-4 transition-transform', pulse && 'animate-cart-pulse')} />
-        {cartCount > 0 && (
-          <span
-            aria-hidden="true"
-            className={cn(
-              'absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-accent-foreground transition-transform',
-              pulse && 'scale-125'
-            )}
-          >
-            {cartCount > 99 ? '99+' : cartCount}
-          </span>
-        )}
+        <span className="relative flex items-center justify-center">
+          <ShoppingBag className={cn('h-4 w-4 transition-transform', pulse && 'animate-cart-pulse')} />
+          {cartCount > 0 && (
+            <span
+              aria-hidden="true"
+              className={cn(
+                'absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-accent-foreground transition-transform',
+                pulse && 'scale-125'
+              )}
+            >
+              {cartCount > 99 ? '99+' : cartCount}
+            </span>
+          )}
+        </span>
       </Link> <
     /Button>
   )
