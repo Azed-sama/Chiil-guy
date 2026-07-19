@@ -3,6 +3,7 @@ import { PackageSearch } from 'lucide-react'
 import { getAllOrders } from '@/lib/data/admin/orders'
 import { OrderStatusBadge } from '@/components/admin/order-status-badge'
 import { OrderStatusSelect } from '@/components/admin/order-status-select'
+import { DeleteOrderButton } from '@/components/admin/delete-order-button'
 import { formatPrice } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Commandes — Administration' }
@@ -17,7 +18,7 @@ function orderReference(id: string) {
 
 export default async function AdminOrdersPage() {
   const orders = await getAllOrders()
-
+  
   return (
     <main className="container py-8">
       <h1 className="font-display text-2xl">Commandes</h1>
@@ -58,6 +59,9 @@ export default async function AdminOrdersPage() {
                   <th scope="col" className="px-4 py-3 font-medium">
                     Modifier
                   </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    <span className="sr-only">Supprimer</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -84,6 +88,9 @@ export default async function AdminOrdersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <OrderStatusSelect orderId={order.id} status={order.status} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <DeleteOrderButton orderId={order.id} />
                     </td>
                   </tr>
                 ))}
@@ -113,8 +120,11 @@ export default async function AdminOrdersPage() {
 
                 <p className="mt-1 text-xs text-ink-muted">{formatOrderDate(order.createdAt)}</p>
 
-                <div className="mt-3">
-                  <OrderStatusSelect orderId={order.id} status={order.status} />
+                <div className="mt-3 flex items-center gap-2">
+                  <div className="flex-1">
+                    <OrderStatusSelect orderId={order.id} status={order.status} />
+                  </div>
+                  <DeleteOrderButton orderId={order.id} />
                 </div>
               </div>
             ))}

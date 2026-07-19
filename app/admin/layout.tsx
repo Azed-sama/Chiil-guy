@@ -1,14 +1,24 @@
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
 import { SignOutButton } from '@/components/auth/sign-out-button'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-paper-muted">
       <header className="border-b border-border bg-paper">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/admin/orders" className="font-display text-lg italic">
-            Administration
-          </Link>
+        <div className="container flex h-16 items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-4">
+            <Link
+              href="/"
+              className="flex shrink-0 items-center gap-1.5 text-sm text-ink-muted hover:text-ink"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Retour au site
+            </Link>
+            <Link href="/admin/orders" className="truncate font-display text-lg italic">
+              Administration
+            </Link>
+          </div>
 
           <SignOutButton />
         </div>

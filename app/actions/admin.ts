@@ -121,3 +121,48 @@ export async function updateOrderStatus(input: {
 
   return { success: true }
 }
+const deleteOrderSchema = z.object({
+  orderId: z.string().uuid(),
+})
+
+export async function deleteOrder(input: { orderId: string }): Promise<ActionResult> {
+  const parsed = deleteOrderSchema.safeParse(input)
+  if (!parsed.success) {
+    return { success: false, error: 'Données invalides.' }
+  }
+
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { success: false, error: 'Non authentifié.' }
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, is_blocked')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile || profile.role !== 'admin' || profile.is_blocked) {
+    return { success: false, error: 'Accès réservé aux administrateurs.' }
+  }
+
+  // order_items est lié à orders avec "on delete cascade" (voir migration),
+  // donc supprimer la commande supprime automatiquement ses lignes associées.
+  const { error: deleteError } = await supabase
+    .from('orders')
+    .delete()
+    .eq('id', parsed.data.orderId)
+
+  if (deleteError) {
+    console.error('deleteOrder error:', deleteError.message)
+    return { success: false, error: 'Impossible de supprimer la commande.' }
+  }
+
+  revalidatePath('/admin/orders')
+
+  return { success: true }
+}

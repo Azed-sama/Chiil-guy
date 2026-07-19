@@ -1,8 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LogOut, ShoppingBag } from 'lucide-react'
+import { LogOut, Menu, ShoppingBag, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { signOut } from '@/app/(auth)/actions'
@@ -24,6 +25,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: SiteHeaderProps) {
   const pathname = usePathname()
+  const [menuOpen, setMenuOpen] = useState(false)
   
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-paper/90 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
@@ -47,7 +49,8 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
           ))}
         </nav>
 
-        <div className="flex items-center gap-1">
+        {/* Actions desktop */}
+        <div className="hidden items-center gap-1 md:flex">
           <Button
             asChild
             variant="ghost"
@@ -96,7 +99,118 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
           )}
           <ThemeToggle />
         </div>
+
+        {/* Actions mobile : panier toujours visible + bouton menu */}
+        <div className="flex items-center gap-1 md:hidden">
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label={`Panier${cartCount > 0 ? ` — ${cartCount} article${cartCount > 1 ? 's' : ''}` : ''}`}
+          >
+            <Link href="/panier">
+              <ShoppingBag className="h-4 w-4" />
+              {cartCount > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-accent-foreground"
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
+
+      {/* Panneau menu mobile */}
+      {menuOpen && (
+        <div className="border-t border-border bg-paper md:hidden">
+          <nav className="container flex flex-col gap-1 py-3" aria-label="Navigation principale">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className={cn(
+                  'rounded px-2 py-2.5 text-sm transition-colors hover:bg-paper-muted',
+                  pathname === link.href ? 'font-medium text-ink' : 'text-ink-muted'
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            <div className="my-2 border-t border-border" />
+
+            {isAuthenticated ? (
+              <>
+                {isAdmin && (
+                  <Link
+                    href="/admin/orders"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
+                  >
+                    Administration
+                  </Link>
+                )}
+                <Link
+                  href="/account"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
+                >
+                  Mon compte
+                </Link>
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="flex w-full items-center gap-2 rounded px-2 py-2.5 text-left text-sm text-ink-muted hover:bg-paper-muted"
+                  >
+                    <LogOut className="h-4 w-4" aria-hidden="true" />
+                    Se déconnecter
+                  </button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/connexion"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
+                >
+                  Se connecter
+                </Link>
+                <Link
+                  href="/inscription"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded px-2 py-2.5 text-sm font-medium text-accent hover:bg-paper-muted"
+                >
+                  Créer un compte
+                </Link>
+              </>
+            )}
+
+            <div className="my-2 border-t border-border" />
+
+            <div className="flex items-center justify-between px-2 py-1">
+              <span className="text-sm text-ink-muted">Thème</span>
+              <ThemeToggle />
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }
