@@ -4,37 +4,68 @@ import { ArrowRight, ImageOff, MessageCircle, Sparkles, Truck } from 'lucide-rea
 import { getFeaturedProducts } from '@/lib/data/products'
 import { getCategories } from '@/lib/data/categories'
 import { getSiteSettings } from '@/lib/data/settings'
+import { getCurrentUser } from '@/lib/data/auth'
 import { ProductGrid } from '@/components/shop/product-grid'
 import { Button } from '@/components/ui/button'
 
 export default async function HomePage() {
-  const [featuredProducts, categories, settings] = await Promise.all([
+  const [featuredProducts, categories, settings, { user }] = await Promise.all([
     getFeaturedProducts(4),
     getCategories(),
     getSiteSettings(),
+    getCurrentUser(),
   ])
-
+  
   return (
     <main>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-accent/5 to-transparent" />
-        <div className="container flex flex-col items-center gap-6 py-24 text-center">
-          <p className="font-mono text-xs uppercase tracking-widest text-accent">Nouvelle collection</p>
-          <h1 className="max-w-2xl font-display text-5xl italic leading-[1.05] balance sm:text-6xl">
+      <section className="relative overflow-hidden bg-ink">
+        {/* Dégradé signature, cohérent avec la page de connexion */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(circle at 15% 20%, rgb(var(--color-accent) / 0.4), transparent 55%), radial-gradient(circle at 90% 85%, rgb(var(--color-gold) / 0.2), transparent 45%)',
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Motif géométrique discret, en léger flottement */}
+        <svg
+          className="absolute -right-32 -top-32 h-[36rem] w-[36rem] animate-float opacity-[0.06] sm:-right-20 sm:-top-20"
+          viewBox="0 0 400 400"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="200" cy="200" r="199" stroke="white" strokeWidth="1" />
+          <circle cx="200" cy="200" r="140" stroke="white" strokeWidth="1" />
+          <circle cx="200" cy="200" r="80" stroke="white" strokeWidth="1" />
+        </svg>
+
+        <div className="container relative flex flex-col items-center gap-7 py-28 text-center sm:py-36">
+          <p className="animate-fade-in-up font-mono text-xs uppercase tracking-[0.2em] text-gold">
+            Nouvelle collection
+          </p>
+          <h1 className="max-w-3xl animate-fade-in-up font-display text-6xl italic leading-[1.02] balance text-paper [animation-delay:75ms] sm:text-7xl">
             Des essentiels pensés pour durer.
           </h1>
-          <p className="max-w-md text-ink-muted">
-            Une sélection soignée, livrée où que tu sois. Commande en quelques clics, on s'occupe du reste.
+          <p className="max-w-md animate-fade-in-up text-paper/70 [animation-delay:150ms]">
+            Une sélection soignée, livrée où que tu sois. Commande en quelques clics, on s'occupe du
+            reste.
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex animate-fade-in-up flex-col gap-3 [animation-delay:225ms] sm:flex-row">
             <Button asChild size="lg">
               <Link href="/produits">
                 Découvrir la collection
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg">
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="border-paper/25 bg-transparent text-paper hover:bg-paper/10"
+            >
               <a href={`https://wa.me/${settings.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="h-4 w-4" aria-hidden="true" />
                 Discuter sur WhatsApp
@@ -46,19 +77,19 @@ export default async function HomePage() {
 
       {/* Catégories */}
       {categories.length > 0 && (
-        <section className="container py-16">
-          <div className="mb-8 flex items-end justify-between">
-            <h2 className="font-display text-2xl">Parcourir par catégorie</h2>
+        <section className="container py-20">
+          <div className="mb-10 flex items-end justify-between">
+            <h2 className="font-display text-3xl">Parcourir par catégorie</h2>
             <Link href="/produits" className="text-sm text-accent hover:underline">
               Tout voir
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
             {categories.slice(0, 4).map((category) => (
               <Link
                 key={category.id}
                 href={`/produits?categorie=${category.slug}`}
-                className="group overflow-hidden rounded-lg border border-border"
+                className="group overflow-hidden rounded-lg border border-border transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-xl hover:shadow-ink/10"
               >
                 <div className="relative aspect-square bg-paper-muted">
                   {category.image_url ? (
@@ -67,7 +98,7 @@ export default async function HomePage() {
                       alt={category.name}
                       fill
                       sizes="(min-width: 640px) 25vw, 50vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-ink-muted">
@@ -75,7 +106,9 @@ export default async function HomePage() {
                     </div>
                   )}
                 </div>
-                <p className="p-3 text-sm font-medium text-ink">{category.name}</p>
+                <p className="p-3.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                  {category.name}
+                </p>
               </Link>
             ))}
           </div>
@@ -85,53 +118,62 @@ export default async function HomePage() {
       {/* Produits en vedette */}
       {featuredProducts.length > 0 && (
         <section className="border-t border-border bg-paper-muted">
-          <div className="container py-16">
-            <div className="mb-8 flex items-end justify-between">
-              <h2 className="font-display text-2xl">Nos coups de cœur</h2>
+          <div className="container py-20">
+            <div className="mb-10 flex items-end justify-between">
+              <h2 className="font-display text-3xl">Nos coups de cœur</h2>
               <Link href="/produits" className="text-sm text-accent hover:underline">
                 Tout voir
               </Link>
             </div>
-            <ProductGrid products={featuredProducts} />
+            <ProductGrid products={featuredProducts} isAuthenticated={!!user} />
           </div>
         </section>
       )}
 
       {/* Réassurance */}
-      <section className="container py-16">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+      <section className="container py-20">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
           <div className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-              <Sparkles className="h-5 w-5" aria-hidden="true" />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <Sparkles className="h-6 w-6" aria-hidden="true" />
             </div>
-            <h3 className="mt-4 font-display text-base">Sélection soignée</h3>
-            <p className="mt-1 text-sm text-ink-muted">
+            <h3 className="mt-5 font-display text-lg">Sélection soignée</h3>
+            <p className="mt-1.5 text-sm text-ink-muted">
               Des produits choisis pour leur qualité, pas leur volume.
             </p>
           </div>
           <div className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <MessageCircle className="h-6 w-6" aria-hidden="true" />
             </div>
-            <h3 className="mt-4 font-display text-base">Suivi personnalisé</h3>
-            <p className="mt-1 text-sm text-ink-muted">
+            <h3 className="mt-5 font-display text-lg">Suivi personnalisé</h3>
+            <p className="mt-1.5 text-sm text-ink-muted">
               Chaque commande est finalisée directement avec toi sur WhatsApp.
             </p>
           </div>
           <div className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-              <Truck className="h-5 w-5" aria-hidden="true" />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <Truck className="h-6 w-6" aria-hidden="true" />
             </div>
-            <h3 className="mt-4 font-display text-base">Livraison flexible</h3>
-            <p className="mt-1 text-sm text-ink-muted">On s'adapte à ta ville et à ton quartier.</p>
+            <h3 className="mt-5 font-display text-lg">Livraison flexible</h3>
+            <p className="mt-1.5 text-sm text-ink-muted">On s'adapte à ta ville et à ton quartier.</p>
           </div>
         </div>
       </section>
 
       {/* CTA final */}
-      <section className="border-t border-border bg-accent text-accent-foreground">
-        <div className="container flex flex-col items-center gap-4 py-16 text-center">
-          <h2 className="font-display text-3xl">Prêt à découvrir la collection ?</h2>
+      <section className="relative overflow-hidden border-t border-border bg-accent text-accent-foreground">
+        <svg
+          className="absolute -left-24 -bottom-24 h-96 w-96 animate-float opacity-[0.08]"
+          viewBox="0 0 400 400"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="200" cy="200" r="199" stroke="white" strokeWidth="1" />
+          <circle cx="200" cy="200" r="140" stroke="white" strokeWidth="1" />
+        </svg>
+        <div className="container relative flex flex-col items-center gap-5 py-20 text-center">
+          <h2 className="font-display text-4xl">Prêt à découvrir la collection ?</h2>
           <Button
             asChild
             size="lg"
