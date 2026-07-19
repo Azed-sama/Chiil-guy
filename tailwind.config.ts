@@ -45,31 +45,9 @@ const config: Config = {
           from: { opacity: '0', transform: 'translateY(4px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
-        'fade-in-up': {
-          from: { opacity: '0', transform: 'translateY(16px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
-        },
-        'fade-in-left': {
-          from: { opacity: '0', transform: 'translateX(-12px)' },
-          to: { opacity: '1', transform: 'translateX(0)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        'cart-pulse': {
-          '0%, 100%': { transform: 'scale(1) rotate(0deg)' },
-          '25%': { transform: 'scale(1.15) rotate(-8deg)' },
-          '50%': { transform: 'scale(1.1) rotate(6deg)' },
-          '75%': { transform: 'scale(1.15) rotate(-4deg)' },
-        },
       },
       animation: {
         'fade-in': 'fade-in 0.3s ease-out',
-        'fade-in-up': 'fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-        'fade-in-left': 'fade-in-left 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
-        float: 'float 6s ease-in-out infinite',
-        'cart-pulse': 'cart-pulse 0.5s ease-in-out',
       },
     },
   },
