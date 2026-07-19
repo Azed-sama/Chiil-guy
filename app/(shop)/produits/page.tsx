@@ -46,6 +46,13 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   
   const totalPages = Math.max(1, Math.ceil(count / pageSize))
   const filtersContent = <ProductFilters categories={categories} searchParams={searchParams} />
+  const activeFilterCount = [
+    searchParams.q,
+    searchParams.categorie,
+    searchParams.tri,
+    searchParams.min,
+    searchParams.max,
+  ].filter(Boolean).length
   
   return (
     <main>
@@ -61,7 +68,14 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           {/* Mobile : panneau repliable, sans JavaScript (natif HTML) */}
           <details className="group mb-6 rounded-lg border border-border lg:hidden">
             <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium">
-              Filtres et tri
+              <span className="flex items-center gap-2">
+                Filtres et tri
+                {activeFilterCount > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-xs font-medium text-accent-foreground">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </span>
               <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
             </summary>
             <div className="border-t border-border p-4">{filtersContent}</div>
