@@ -17,13 +17,14 @@ const NAV_LINKS = [
 
 interface SiteHeaderProps {
   isAuthenticated: boolean
+  isAdmin ? : boolean
   cartCount: number
   storeName: string
 }
 
-export function SiteHeader({ isAuthenticated, cartCount, storeName }: SiteHeaderProps) {
+export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: SiteHeaderProps) {
   const pathname = usePathname()
-
+  
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-paper/90 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
       <div className="container flex h-16 items-center justify-between">
@@ -69,6 +70,11 @@ export function SiteHeader({ isAuthenticated, cartCount, storeName }: SiteHeader
 
           {isAuthenticated ? (
             <>
+              {isAdmin && (
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/admin/orders">Administration</Link>
+                </Button>
+              )}
               <Button asChild variant="ghost" size="sm">
                 <Link href="/account">Mon compte</Link>
               </Button>
