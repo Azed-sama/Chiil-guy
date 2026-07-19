@@ -15,29 +15,26 @@ const DEFAULTS: SiteSettings = {
   whatsappNumber: '',
 }
 
-export const getSiteSettings = cache(async (): Promise < SiteSettings > => {
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   const supabase = createClient()
-  
-  // 1. On va chercher spécifiquement la ligne où la clé est 'store_name'
+
+  // La table s'appelle "settings" (une seule ligne, id=1), avec des colonnes
+  // directes : store_name, store_description, contact_email, whatsapp_number.
   const { data, error } = await supabase
-    .from('site_settings')
-    .select('value')
-    .eq('key', 'store_name')
+    .from('settings')
+    .select('store_name, store_description, contact_email, whatsapp_number')
+    .eq('id', 1)
     .maybeSingle()
-  
+
   if (error || !data) {
     if (error) console.error('getSiteSettings error:', error.message)
     return DEFAULTS
   }
-  
-  // 2. On extrait "Onyx Shop" depuis la colonne 'value'
-  // Comme c'est du format JSONB dans ta base, on s'assure de récupérer du texte
-  const storeName = typeof data.value === 'string' ? data.value : (data.value as any)?.store_name || DEFAULTS.storeName
-  
+
   return {
-    storeName: storeName || DEFAULTS.storeName,
-    storeDescription: DEFAULTS.storeDescription,
-    contactEmail: DEFAULTS.contactEmail,
-    whatsappNumber: DEFAULTS.whatsappNumber, // On garde la valeur par défaut pour l'instant
+    storeName: data.store_name || DEFAULTS.storeName,
+    storeDescription: data.store_description || DEFAULTS.storeDescription,
+    contactEmail: data.contact_email || DEFAULTS.contactEmail,
+    whatsappNumber: data.whatsapp_number || DEFAULTS.whatsappNumber,
   }
 })
