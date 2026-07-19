@@ -21,7 +21,6 @@ function CartButton({ cartCount }: { cartCount: number }) {
   const previousCount = useRef(cartCount)
   
   useEffect(() => {
-    // Pulse uniquement quand le panier grossit (pas au premier rendu, pas au retrait)
     if (cartCount > previousCount.current) {
       setPulse(true)
       const timeout = setTimeout(() => setPulse(false), 500)
