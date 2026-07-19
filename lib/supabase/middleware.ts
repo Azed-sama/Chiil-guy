@@ -34,9 +34,42 @@ export async function updateSession(request: NextRequest) {
 
   // IMPORTANT : ne pas retirer cet appel. Il rafraîchit le token et
   // garantit que auth.uid() est à jour pour les policies RLS.
-  const {
+  let {
     data: { user },
   } = await supabase.auth.getUser()
+
+  // ---------------------------------------------------------
+  // Guest checkout : si personne n'est connecté, on crée une
+  // session anonyme Supabase (auth.uid() existe alors, sans email
+  // ni mot de passe). Le panier et la commande fonctionnent ainsi
+  // pour les visiteurs non inscrits, sans changer la moindre policy
+  // RLS (elles reposent toutes sur auth.uid()).
+  //
+  // Nécessite d'avoir activé "Allow anonymous sign-ins" dans
+  // Supabase > Authentication > Providers, sinon signInAnonymously()
+  // échoue silencieusement et le visiteur reste non connecté (repli
+  // sans casse : /account et /admin redirigent alors normalement).
+  //
+  // Exclusions volontaires :
+  // - /account et /admin : ces espaces restent réservés aux vrais
+  //   comptes, pas la peine d'y créer une session anonyme.
+  // - robots d'indexation évidents : on évite de gonfler le nombre
+  //   d'utilisateurs anonymes avec du trafic non-humain.
+  // ---------------------------------------------------------
+  const { pathname } = request.nextUrl
+  const skipAnonAuth =
+    pathname.startsWith('/account') ||
+    pathname.startsWith('/admin') ||
+    /bot|crawl|spider|slurp|facebookexternalhit|whatsapp/i.test(
+      request.headers.get('user-agent') ?? ''
+    )
+
+  if (!user && !skipAnonAuth) {
+    const { data, error } = await supabase.auth.signInAnonymously()
+    if (!error) {
+      user = data.user
+    }
+  }
 
   return { response, user, supabase }
 }
