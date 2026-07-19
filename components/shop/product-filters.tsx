@@ -48,7 +48,7 @@ export function ProductFilters({ categories, searchParams }: ProductFiltersProps
         </div>
 
         <fieldset>
-          <legend className="mb-1.5 text-sm font-medium text-ink">Prix (€)</legend>
+          <legend className="mb-1.5 text-sm font-medium text-ink">Prix (FCFA)</legend>
           <div className="flex items-center gap-2">
             <input
               type="number"

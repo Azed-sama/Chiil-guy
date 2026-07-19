@@ -9,34 +9,35 @@ import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { signIn } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { Label } from '@/components/ui/label'
 import { FieldError } from '@/components/ui/field-error'
 
 export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/account'
-  const [serverError, setServerError] = useState<string | null>(null)
-
+  const redirectTo = searchParams.get('redirect') || '/produits'
+  const [serverError, setServerError] = useState < string | null > (null)
+  
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
-
+  } = useForm < LoginInput > ({ resolver: zodResolver(loginSchema) })
+  
   async function onSubmit(data: LoginInput) {
     setServerError(null)
     const result = await signIn(data)
-
+    
     if (!result.success) {
       setServerError(result.error)
       return
     }
-
+    
     router.push(redirectTo)
     router.refresh()
   }
-
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
       <div>
@@ -59,9 +60,8 @@ export function LoginForm() {
             Oublié ?
           </Link>
         </div>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           autoComplete="current-password"
           aria-invalid={!!errors.password}
           aria-describedby={errors.password ? 'password-error' : undefined}
