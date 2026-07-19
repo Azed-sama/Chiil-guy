@@ -1,101 +1,114 @@
-"use server";
+'use server'
 
-import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { createClient } from '@/lib/supabase/server'
+import { getCartItems } from '@/lib/data/cart'
+import { getSiteSettings } from '@/lib/data/settings'
+import { getEffectivePrice } from '@/lib/utils'
+import { shippingInfoSchema, type ShippingInfoInput } from '@/lib/validations/order'
 
-// Définition locale du schéma pour éviter les imports cassés sur Vercel
-const checkoutSchema = z.object({
-  firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
-  lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  email: z.string().email("Adresse email invalide"),
-  phone: z.string().min(8, "Numéro de téléphone invalide"),
-  address: z.string().min(5, "L'adresse est trop courte"),
-  city: z.string().min(2, "La ville est trop courte"),
-  postalCode: z.string().optional().or(z.literal("")),
-  paymentMethod: z.string(),
-});
+type CreateOrderResult =
+  | { success: true; orderReference: string; whatsappUrl: string }
+  | { success: false; error: string }
 
-export async function createOrder(formData: FormData, cartItems: any[], subtotal: number, shippingCost: number, total: number) {
-  const rawData = {
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    email: formData.get("email"),
-    phone: formData.get("phone"),
-    address: formData.get("address"),
-    city: formData.get("city"),
-    postalCode: formData.get("postalCode"),
-    paymentMethod: formData.get("paymentMethod"),
-  };
-
-  const parsed = checkoutSchema.safeParse(rawData);
+export async function createOrder(input: ShippingInfoInput): Promise<CreateOrderResult> {
+  const parsed = shippingInfoSchema.safeParse(input)
 
   if (!parsed.success) {
-    return { error: "Données de commande invalides. Veuillez vérifier le formulaire." };
+    return { success: false, error: 'Données de commande invalides. Veuillez vérifier le formulaire.' }
   }
 
-  if (!cartItems || cartItems.length === 0) {
-    return { error: "Votre panier est vide." };
-  }
+  const supabase = createClient()
 
-  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-  // Récupération de l'utilisateur connecté
-  const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Vous devez être connecté pour passer une commande." };
+    return { success: false, error: 'Vous devez être connecté pour passer une commande.' }
   }
 
-  // 1. Création de la commande principale (Contournement du type strict avec 'as any')
-  const { data: order, error: orderError } = await (supabase
-    .from("orders") as any)
+  const items = await getCartItems()
+  if (items.length === 0) {
+    return { success: false, error: 'Votre panier est vide.' }
+  }
+
+  const subtotal = items.reduce(
+    (sum, item) => sum + getEffectivePrice(item.product).price * item.quantity,
+    0
+  )
+  const shippingCost = 0
+  const totalAmount = subtotal + shippingCost
+
+  // 1. Création de la commande
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
     .insert({
       user_id: user.id,
-      status: "pending",
+      status: 'pending',
       subtotal,
       shipping_cost: shippingCost,
-      total,
-      shipping_first_name: parsed.data.firstName,
-      shipping_last_name: parsed.data.lastName,
-      shipping_email: parsed.data.email,
-      shipping_phone: parsed.data.phone,
-      shipping_address: parsed.data.address,
-      shipping_city: parsed.data.city,
-      shipping_postal_code: parsed.data.postalCode,
-      payment_method: parsed.data.paymentMethod,
+      total_amount: totalAmount,
+      shipping_address: {
+        full_name: parsed.data.fullName,
+        phone: parsed.data.phone,
+        city: parsed.data.city,
+        address: parsed.data.address,
+      },
+      contact_email: user.email ?? '',
+      contact_phone: parsed.data.phone,
+      notes: parsed.data.notes || null,
     })
-    .select()
-    .single();
+    .select('id')
+    .single()
 
   if (orderError || !order) {
-    console.error("Erreur lors de la création de la commande:", orderError);
-    return { error: "Impossible d'enregistrer votre commande. Réessayez." };
+    console.error('createOrder error:', orderError?.message)
+    return { success: false, error: "Impossible d'enregistrer votre commande. Réessayez." }
   }
 
-  // 2. Préparation des articles de la commande
-  const orderItems = cartItems.map((item) => ({
+  // 2. Lignes de commande (snapshot des infos produit au moment de l'achat)
+  const orderItems = items.map((item) => ({
     order_id: order.id,
-    product_id: item.id,
+    product_id: item.product.id,
+    product_name: item.product.name,
+    product_image_url: item.product.image?.url ?? null,
+    unit_price: getEffectivePrice(item.product).price,
     quantity: item.quantity,
-    price: item.price,
-    size: item.selectedSize || null,
-    color: item.selectedColor || null,
-  }));
+    subtotal: getEffectivePrice(item.product).price * item.quantity,
+  }))
 
-  // Insertion des articles (Contournement du type avec 'as any')
-  const { error: itemsError } = await (supabase
-    .from("order_items") as any)
-    .insert(orderItems);
+  const { error: itemsError } = await supabase.from('order_items').insert(orderItems)
 
   if (itemsError) {
-    console.error("Erreur lors de l'enregistrement des articles de la commande:", itemsError);
-    return { error: "Commande créée, mais un problème est survenu avec les articles." };
+    console.error('createOrder items error:', itemsError.message)
+    return { success: false, error: 'Commande créée, mais un problème est survenu avec les articles.' }
   }
 
-  // 3. Optionnel : Vider le panier côté base de données si nécessaire
-  await supabase.from("cart").delete().eq("user_id", user.id);
+  // 3. Vider le panier
+  await supabase.from('cart_items').delete().eq('user_id', user.id)
 
-  revalidatePath("/profile/orders");
-  
-  return { success: true, orderId: order.id };
+  // 4. Construire le lien WhatsApp avec le récapitulatif
+  const settings = await getSiteSettings()
+  const orderReference = order.id.slice(0, 8).toUpperCase()
+
+  const lines = items.map(
+    (item) => `- ${item.quantity} × ${item.product.name}`
+  )
+  const message = [
+    `Bonjour, je souhaite finaliser ma commande ${orderReference} :`,
+    ...lines,
+    ``,
+    `Nom : ${parsed.data.fullName}`,
+    `Téléphone : ${parsed.data.phone}`,
+    `Ville : ${parsed.data.city}`,
+    `Adresse : ${parsed.data.address}`,
+    parsed.data.notes ? `Note : ${parsed.data.notes}` : null,
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  const phoneDigitsOnly = settings.whatsappNumber.replace(/[^0-9]/g, '')
+  const whatsappUrl = `https://wa.me/${phoneDigitsOnly}?text=${encodeURIComponent(message)}`
+
+  return { success: true, orderReference, whatsappUrl }
 }
