@@ -16,13 +16,13 @@ interface ProductPageProps {
   params: { slug: string }
 }
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ProductPageProps): Promise < Metadata > {
   const product = await getProductBySlug(params.slug)
-
+  
   if (!product) {
     return { title: 'Produit introuvable' }
   }
-
+  
   return {
     title: product.name,
     description: product.description?.slice(0, 155) || undefined,
@@ -34,20 +34,20 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProductBySlug(params.slug)
-
+  
   if (!product) {
     notFound()
   }
-
+  
   const [relatedProducts, reviews, ratingSummary, { data: { user } }] = await Promise.all([
     getRelatedProducts(product.category_id, product.id),
     getProductReviews(product.id),
     getProductRatingSummary(product.id),
     createClient().auth.getUser(),
   ])
-
+  
   const { price, originalPrice, isOnSale, discountPercent } = getEffectivePrice(product)
-
+  
   return (
     <main className="container py-8">
       {/* Fil d'Ariane */}
@@ -157,7 +157,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {relatedProducts.length > 0 && (
         <section className="mt-20 border-t border-border pt-12">
           <h2 className="mb-6 font-display text-2xl">Produits similaires</h2>
-          <ProductGrid products={relatedProducts} />
+          <ProductGrid products={relatedProducts} isAuthenticated={!!user} />
         </section>
       )}
     </main>

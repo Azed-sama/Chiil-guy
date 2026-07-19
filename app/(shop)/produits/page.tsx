@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getProducts, type ProductSort } from '@/lib/data/products'
 import { getCategories } from '@/lib/data/categories'
+import { getCurrentUser } from '@/lib/data/auth'
 import { ProductGrid } from '@/components/shop/product-grid'
 import { ProductFilters } from '@/components/shop/product-filters'
 import { Pagination } from '@/components/shop/pagination'
@@ -13,12 +14,12 @@ export const metadata: Metadata = {
 
 interface CatalogPageProps {
   searchParams: {
-    q?: string
-    categorie?: string
-    tri?: string
-    min?: string
-    max?: string
-    page?: string
+    q ? : string
+    categorie ? : string
+    tri ? : string
+    min ? : string
+    max ? : string
+    page ? : string
   }
 }
 
@@ -26,11 +27,11 @@ const VALID_SORTS: ProductSort[] = ['prix-asc', 'prix-desc', 'nouveautes']
 
 export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const page = Number(searchParams.page) > 0 ? Number(searchParams.page) : 1
-  const tri = VALID_SORTS.includes(searchParams.tri as ProductSort)
-    ? (searchParams.tri as ProductSort)
-    : undefined
-
-  const [{ products, count, pageSize }, categories] = await Promise.all([
+  const tri = VALID_SORTS.includes(searchParams.tri as ProductSort) ?
+    (searchParams.tri as ProductSort) :
+    undefined
+  
+  const [{ products, count, pageSize }, categories, { user }] = await Promise.all([
     getProducts({
       q: searchParams.q,
       categorie: searchParams.categorie,
@@ -40,11 +41,12 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       page,
     }),
     getCategories(),
+    getCurrentUser(),
   ])
-
+  
   const totalPages = Math.max(1, Math.ceil(count / pageSize))
   const filtersContent = <ProductFilters categories={categories} searchParams={searchParams} />
-
+  
   return (
     <main>
       <section className="border-b border-border bg-paper-muted">
@@ -73,7 +75,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           <p className="mb-6 text-sm text-ink-muted">
             {count} produit{count > 1 ? 's' : ''}
           </p>
-          <ProductGrid products={products} />
+          <ProductGrid products={products} isAuthenticated={!!user} />
           <Pagination page={page} totalPages={totalPages} searchParams={searchParams} />
         </div>
       </div>

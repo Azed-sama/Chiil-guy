@@ -4,16 +4,18 @@ import { ArrowRight, ImageOff, MessageCircle, Sparkles, Truck } from 'lucide-rea
 import { getFeaturedProducts } from '@/lib/data/products'
 import { getCategories } from '@/lib/data/categories'
 import { getSiteSettings } from '@/lib/data/settings'
+import { getCurrentUser } from '@/lib/data/auth'
 import { ProductGrid } from '@/components/shop/product-grid'
 import { Button } from '@/components/ui/button'
 
 export default async function HomePage() {
-  const [featuredProducts, categories, settings] = await Promise.all([
+  const [featuredProducts, categories, settings, { user }] = await Promise.all([
     getFeaturedProducts(4),
     getCategories(),
     getSiteSettings(),
+    getCurrentUser(),
   ])
-
+  
   return (
     <main>
       {/* Hero */}
@@ -92,7 +94,7 @@ export default async function HomePage() {
                 Tout voir
               </Link>
             </div>
-            <ProductGrid products={featuredProducts} />
+            <ProductGrid products={featuredProducts} isAuthenticated={!!user} />
           </div>
         </section>
       )}
