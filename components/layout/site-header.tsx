@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LogOut, Menu, ShoppingBag, X } from 'lucide-react'
@@ -16,61 +16,6 @@ const NAV_LINKS = [
   { href: '/contact', label: 'Contact' },
 ]
 
-function CartButton({ cartCount }: { cartCount: number }) {
-  const [pulse, setPulse] = useState(false)
-  const previousCount = useRef(cartCount)
-  
-  useEffect(() => {
-    if (cartCount > previousCount.current) {
-      setPulse(true)
-      const timeout = setTimeout(() => setPulse(false), 500)
-      previousCount.current = cartCount
-      return () => clearTimeout(timeout)
-    }
-    previousCount.current = cartCount
-  }, [cartCount])
-  
-  return (
-    <Button
-      asChild
-      variant="ghost"
-      size="icon"
-      className="relative"
-      aria-label={`Panier${cartCount > 0 ? ` — ${cartCount} article${cartCount > 1 ? 's' : ''}` : ''}`}
-    >
-      <Link href="/panier">
-        <ShoppingBag className={cn('h-4 w-4 transition-transform', pulse && 'animate-cart-pulse')} />
-        {cartCount > 0 && (
-          <span
-            aria-hidden="true"
-            className={cn(
-              'absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-accent-foreground transition-transform',
-              pulse && 'scale-125'
-            )}
-          >
-            {cartCount > 99 ? '99+' : cartCount}
-          </span>
-        )}
-      </Link> <
-    /Button>
-  )
-}
-
-function useScrolled(threshold = 8) {
-  const [scrolled, setScrolled] = useState(false)
-  
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > threshold)
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [threshold])
-  
-  return scrolled
-}
-
 interface SiteHeaderProps {
   isAuthenticated: boolean
   isAdmin ? : boolean
@@ -81,24 +26,12 @@ interface SiteHeaderProps {
 export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: SiteHeaderProps) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
-  const scrolled = useScrolled()
   
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-40 border-b bg-paper/90 backdrop-blur transition-all duration-300 supports-[backdrop-filter]:bg-paper/80',
-        scrolled ? 'border-border shadow-sm' : 'border-transparent'
-      )}
-    >
-      <div
-        className={cn(
-          'container flex items-center justify-between transition-[height] duration-300',
-          scrolled ? 'h-14' : 'h-16'
-        )}
-      >
-        <Link href="/" className="flex items-baseline gap-1 font-display text-lg italic">
+    <header className="sticky top-0 z-40 border-b border-border bg-paper/90 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="font-display text-lg italic">
           {storeName}
-          <span className="text-gold" aria-hidden="true">.</span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex" aria-label="Navigation principale">
@@ -118,7 +51,25 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
 
         {/* Actions desktop */}
         <div className="hidden items-center gap-1 md:flex">
-          <CartButton cartCount={cartCount} />
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label={`Panier${cartCount > 0 ? ` — ${cartCount} article${cartCount > 1 ? 's' : ''}` : ''}`}
+          >
+            <Link href="/panier">
+              <ShoppingBag className="h-4 w-4" />
+              {cartCount > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-accent-foreground"
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+          </Button>
 
           {isAuthenticated ? (
             <>
@@ -151,7 +102,25 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
 
         {/* Actions mobile : panier toujours visible + bouton menu */}
         <div className="flex items-center gap-1 md:hidden">
-          <CartButton cartCount={cartCount} />
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label={`Panier${cartCount > 0 ? ` — ${cartCount} article${cartCount > 1 ? 's' : ''}` : ''}`}
+          >
+            <Link href="/panier">
+              <ShoppingBag className="h-4 w-4" />
+              {cartCount > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-medium text-accent-foreground"
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
+            </Link>
+          </Button>
 
           <Button
             type="button"
