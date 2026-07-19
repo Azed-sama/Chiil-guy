@@ -10,26 +10,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Administration
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Navigation admin">
-            <Link href="/admin/orders" className="text-sm text-ink hover:text-accent">
-              Commandes
-            </Link>
-            <Link href="/admin/products" className="text-sm text-ink hover:text-accent">
-              Produits
-            </Link>
-            <Link href="/admin/categories" className="text-sm text-ink hover:text-accent">
-              Catégories
-            </Link>
-            <Link href="/admin/users" className="text-sm text-ink hover:text-accent">
-              Utilisateurs
-            </Link>
-            <Link href="/admin/settings" className="text-sm text-ink hover:text-accent">
-              Paramètres
-            </Link>
-          </nav>
-
           <SignOutButton />
         </div>
+
+        <nav
+          className="container flex gap-5 overflow-x-auto border-t border-border py-3 text-sm"
+          aria-label="Navigation admin"
+        >
+          <Link href="/admin/orders" className="shrink-0 text-ink hover:text-accent">
+            Commandes
+          </Link>
+          <Link href="/admin/products" className="shrink-0 text-ink hover:text-accent">
+            Produits
+          </Link>
+          <Link href="/admin/categories" className="shrink-0 text-ink hover:text-accent">
+            Catégories
+          </Link>
+          <Link href="/admin/users" className="shrink-0 text-ink hover:text-accent">
+            Utilisateurs
+          </Link>
+          <Link href="/admin/settings" className="shrink-0 text-ink hover:text-accent">
+            Paramètres
+          </Link>
+        </nav>
       </header>
 
       <div className="bg-paper">{children}</div>
