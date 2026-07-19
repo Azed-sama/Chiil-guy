@@ -28,7 +28,7 @@
     "stripe": "^16.6.0",
     "sonner": "^1.5.0",
     "server-only": "^0.0.1",
-    "@radix-ui/react-slot": "^1.1.0"
+    "@radix-ui/react-slot": "1.2.3"
   },
   "devDependencies": {
     "typescript": "^5.5.4",
