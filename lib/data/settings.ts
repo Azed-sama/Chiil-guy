@@ -18,8 +18,6 @@ const DEFAULTS: SiteSettings = {
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   const supabase = createClient()
 
-  // La table s'appelle "settings" (une seule ligne, id=1), avec des colonnes
-  // directes : store_name, store_description, contact_email, whatsapp_number.
   const { data, error } = await supabase
     .from('settings')
     .select('store_name, store_description, contact_email, whatsapp_number')
