@@ -57,6 +57,21 @@ function CartButton({ cartCount }: { cartCount: number }) {
   )
 }
 
+function useScrolled(threshold = 8) {
+  const [scrolled, setScrolled] = useState(false)
+  
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > threshold)
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [threshold])
+  
+  return scrolled
+}
+
 interface SiteHeaderProps {
   isAuthenticated: boolean
   isAdmin ? : boolean
@@ -67,12 +82,24 @@ interface SiteHeaderProps {
 export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: SiteHeaderProps) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const scrolled = useScrolled()
   
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-paper/90 backdrop-blur supports-[backdrop-filter]:bg-paper/80">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="font-display text-lg italic">
+    <header
+      className={cn(
+        'sticky top-0 z-40 border-b bg-paper/90 backdrop-blur transition-all duration-300 supports-[backdrop-filter]:bg-paper/80',
+        scrolled ? 'border-border shadow-sm' : 'border-transparent'
+      )}
+    >
+      <div
+        className={cn(
+          'container flex items-center justify-between transition-[height] duration-300',
+          scrolled ? 'h-14' : 'h-16'
+        )}
+      >
+        <Link href="/" className="flex items-baseline gap-1 font-display text-lg italic">
           {storeName}
+          <span className="text-gold" aria-hidden="true">.</span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex" aria-label="Navigation principale">
