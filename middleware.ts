@@ -5,21 +5,10 @@ export async function middleware(request: NextRequest) {
   const { response, user, supabase } = await updateSession(request)
   const { pathname } = request.nextUrl
   
-  // ---------------------------------------------------------
-  // Guest Checkout : tout visiteur sans session (même pas anonyme)
-  // reçoit automatiquement une session anonyme Supabase. Ça lui
-  // donne un user_id valide dès la première visite, ce qui permet
-  // au panier et à la commande de fonctionner sans email/mot de
-  // passe. S'il crée un compte plus tard, Supabase peut fusionner
-  // ce compte anonyme avec le compte réel (upgrade), sans perdre
-  // son panier.
-  // ---------------------------------------------------------
-  if (!user) {
-    const { error } = await supabase.auth.signInAnonymously()
-    if (error) {
-      console.error('Anonymous sign-in failed:', error.message)
-    }
-  }
+  // Note : la session anonyme (Guest Checkout) est déjà créée dans
+  // updateSession() ci-dessus si besoin — ne pas la recréer ici, ça
+  // écraserait le cookie de session sur un `response` jetable et
+  // casserait la persistance de session (bug corrigé le 20/07).
   
   // ---------------------------------------------------------
   // Espace client : authentification REELLE requise (un compte
