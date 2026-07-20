@@ -1,18 +1,15 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/data/auth'
 import { LoginForm } from '@/components/auth/login-form'
 
 export const metadata: Metadata = { title: 'Connexion' }
 
 export default async function LoginPage() {
-  const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { isAuthenticated } = await getCurrentUser()
 
-  if (user) {
+  if (isAuthenticated) {
     redirect('/account')
   }
 
