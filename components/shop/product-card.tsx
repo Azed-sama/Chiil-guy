@@ -8,14 +8,13 @@ import type { ProductWithRelations } from '@/lib/data/products'
 
 interface ProductCardProps {
   product: ProductWithRelations
-  isAuthenticated ? : boolean
 }
 
-export function ProductCard({ product, isAuthenticated = false }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { price, originalPrice, isOnSale, discountPercent } = getEffectivePrice(product)
   const cover = product.images[0]
   const isOutOfStock = product.stock_quantity <= 0
-  
+
   return (
     <Link
       href={`/produits/${product.slug}`}
@@ -69,7 +68,7 @@ export function ProductCard({ product, isAuthenticated = false }: ProductCardPro
               'max-md:translate-y-0 max-md:opacity-100'
             )}
           >
-            <QuickAddButton productId={product.id} isAuthenticated={isAuthenticated} />
+            <QuickAddButton productId={product.id} />
           </div>
         )}
       </div>

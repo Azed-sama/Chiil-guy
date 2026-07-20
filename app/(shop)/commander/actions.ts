@@ -24,10 +24,7 @@ export async function createOrder(input: ShippingInfoInput): Promise < CreateOrd
   } = await supabase.auth.getUser()
   
   if (!user) {
-    // Ne devrait quasiment jamais arriver : le middleware crée une
-    // session anonyme pour tout visiteur. Si ça arrive, c'est que
-    // l'authentification anonyme est désactivée côté Supabase.
-    return { success: false, error: 'Impossible de préparer votre commande. Merci de réessayer.' }
+    return { success: false, error: 'Une erreur est survenue. Merci de recharger la page et réessayer.' }
   }
   
   const items = await getCartItems()
@@ -57,7 +54,7 @@ export async function createOrder(input: ShippingInfoInput): Promise < CreateOrd
       city: parsed.data.city,
       address: parsed.data.address,
     },
-    contact_email: user.email ?? null,
+    contact_email: parsed.data.email,
     contact_phone: parsed.data.phone,
     notes: parsed.data.notes || null,
   })

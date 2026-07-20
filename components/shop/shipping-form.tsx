@@ -13,29 +13,29 @@ import { Textarea } from '@/components/ui/textarea'
 import { FieldError } from '@/components/ui/field-error'
 
 export function ShippingForm() {
-  const [serverError, setServerError] = useState<string | null>(null)
-
+  const [serverError, setServerError] = useState < string | null > (null)
+  
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ShippingInfoInput>({ resolver: zodResolver(shippingInfoSchema) })
-
+  } = useForm < ShippingInfoInput > ({ resolver: zodResolver(shippingInfoSchema) })
+  
   async function onSubmit(data: ShippingInfoInput) {
     setServerError(null)
     const result = await createOrder(data)
-
+    
     if (!result.success) {
       setServerError(result.error)
       toast.error(result.error)
       return
     }
-
+    
     toast.success(`Commande ${result.orderReference} enregistrée !`)
     // Redirection vers WhatsApp pour finaliser les détails et le paiement
     window.location.href = result.whatsappUrl
   }
-
+  
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
       <div>
@@ -49,6 +49,20 @@ export function ShippingForm() {
           {...register('fullName')}
         />
         <FieldError id="fullName-error" message={errors.fullName?.message} />
+      </div>
+
+      <div>
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="pour le suivi de ta commande"
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? 'email-error' : undefined}
+          {...register('email')}
+        />
+        <FieldError id="email-error" message={errors.email?.message} />
       </div>
 
       <div>

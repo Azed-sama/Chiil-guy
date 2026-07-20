@@ -4,10 +4,26 @@ import { updateSession } from '@/lib/supabase/middleware'
 export async function middleware(request: NextRequest) {
   const { response, user, supabase } = await updateSession(request)
   const { pathname } = request.nextUrl
-
+  
   // ---------------------------------------------------------
-  // Espace client : authentification requise (compte réel, pas une
-  // simple session anonyme créée pour le guest checkout)
+  // Guest Checkout : tout visiteur sans session (même pas anonyme)
+  // reçoit automatiquement une session anonyme Supabase. Ça lui
+  // donne un user_id valide dès la première visite, ce qui permet
+  // au panier et à la commande de fonctionner sans email/mot de
+  // passe. S'il crée un compte plus tard, Supabase peut fusionner
+  // ce compte anonyme avec le compte réel (upgrade), sans perdre
+  // son panier.
+  // ---------------------------------------------------------
+  if (!user) {
+    const { error } = await supabase.auth.signInAnonymously()
+    if (error) {
+      console.error('Anonymous sign-in failed:', error.message)
+    }
+  }
+  
+  // ---------------------------------------------------------
+  // Espace client : authentification REELLE requise (un compte
+  // anonyme ne suffit pas à accéder à l'espace "Mon compte")
   // ---------------------------------------------------------
   if (pathname.startsWith('/account') && (!user || user.is_anonymous)) {
     const url = request.nextUrl.clone()
@@ -15,7 +31,7 @@ export async function middleware(request: NextRequest) {
     url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
-
+  
   // ---------------------------------------------------------
   // Espace admin : authentification + rôle admin + compte non bloqué
   // Vérification faite ici côté serveur (impossible à contourner
@@ -29,20 +45,20 @@ export async function middleware(request: NextRequest) {
       url.searchParams.set('redirect', pathname)
       return NextResponse.redirect(url)
     }
-
+    
     const { data: profile } = await supabase
       .from('profiles')
       .select('role, is_blocked')
       .eq('id', user.id)
       .single()
-
+    
     if (!profile || profile.role !== 'admin' || profile.is_blocked) {
       const url = request.nextUrl.clone()
       url.pathname = '/'
       return NextResponse.redirect(url)
     }
   }
-
+  
   return response
 }
 

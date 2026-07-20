@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ShoppingBag, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { addToCart } from '@/app/(shop)/panier/actions'
@@ -9,41 +9,36 @@ import { cn } from '@/lib/utils'
 
 interface QuickAddButtonProps {
   productId: string
-  isAuthenticated: boolean
-  className?: string
+  className ? : string
 }
 
-export function QuickAddButton({ productId, isAuthenticated, className }: QuickAddButtonProps) {
+export function QuickAddButton({ productId, className }: QuickAddButtonProps) {
   const router = useRouter()
-  const pathname = usePathname()
-  const [state, setState] = useState<'idle' | 'pending' | 'done'>('idle')
-
+  const [state, setState] = useState < 'idle' | 'pending' | 'done' > ('idle')
+  
   async function handleClick(e: React.MouseEvent) {
     // Empêche la navigation du <Link> parent qui enveloppe la carte
     e.preventDefault()
     e.stopPropagation()
-
-    if (!isAuthenticated) {
-      router.push(`/connexion?redirect=${encodeURIComponent(pathname)}`)
-      return
-    }
-
+    
+    // Un user (anonyme ou réel) existe toujours grâce au middleware
+    // (Guest Checkout) : pas besoin de vérifier l'authentification ici.
     setState('pending')
     const result = await addToCart({ productId, quantity: 1 })
-
+    
     if (!result.success) {
       setState('idle')
       toast.error(result.error)
       return
     }
-
+    
     setState('done')
     toast.success('Ajouté au panier')
     router.refresh()
-
+    
     setTimeout(() => setState('idle'), 1500)
   }
-
+  
   return (
     <button
       type="button"

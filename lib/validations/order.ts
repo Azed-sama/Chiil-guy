@@ -5,6 +5,7 @@ export const shippingInfoSchema = z.object({
     .string()
     .min(2, 'Le nom complet doit contenir au moins 2 caractères')
     .max(100, 'Le nom complet est trop long'),
+  email: z.string().email('Adresse email invalide'),
   phone: z
     .string()
     .min(8, 'Numéro de téléphone invalide')
@@ -20,4 +21,4 @@ export const shippingInfoSchema = z.object({
     .max(300, 'Trop long'),
   notes: z.string().max(500, 'Note trop longue').optional().or(z.literal('')),
 })
-export type ShippingInfoInput = z.infer<typeof shippingInfoSchema>
+export type ShippingInfoInput = z.infer < typeof shippingInfoSchema >
