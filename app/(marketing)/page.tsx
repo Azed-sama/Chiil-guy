@@ -4,14 +4,17 @@ import { ArrowRight, ImageOff, MessageCircle, Sparkles, Truck } from 'lucide-rea
 import { getFeaturedProducts } from '@/lib/data/products'
 import { getCategories } from '@/lib/data/categories'
 import { getSiteSettings } from '@/lib/data/settings'
+import { getCurrentUser } from '@/lib/data/auth'
 import { ProductGrid } from '@/components/shop/product-grid'
 import { Button } from '@/components/ui/button'
+import { Reveal } from '@/components/layout/reveal'
 
 export default async function HomePage() {
-  const [featuredProducts, categories, settings] = await Promise.all([
+  const [featuredProducts, categories, settings, { user }] = await Promise.all([
     getFeaturedProducts(4),
     getCategories(),
     getSiteSettings(),
+    getCurrentUser(),
   ])
   
   return (
@@ -80,38 +83,39 @@ export default async function HomePage() {
       {/* Catégories */}
       {categories.length > 0 && (
         <section className="container py-20">
-          <div className="mb-10 flex items-end justify-between">
+          <Reveal className="mb-10 flex items-end justify-between">
             <h2 className="font-display text-3xl">Parcourir par catégorie</h2>
             <Link href="/produits" className="text-sm text-accent hover:underline">
               Tout voir
             </Link>
-          </div>
+          </Reveal>
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-            {categories.slice(0, 4).map((category) => (
-              <Link
-                key={category.id}
-                href={`/produits?categorie=${category.slug}`}
-                className="group overflow-hidden rounded-lg border border-border transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-xl hover:shadow-ink/10"
-              >
-                <div className="relative aspect-square bg-paper-muted">
-                  {category.image_url ? (
-                    <Image
-                      src={category.image_url}
-                      alt={category.name}
-                      fill
-                      sizes="(min-width: 640px) 25vw, 50vw"
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-ink-muted">
-                      <ImageOff className="h-6 w-6" aria-hidden="true" />
-                    </div>
-                  )}
-                </div>
-                <p className="p-3.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
-                  {category.name}
-                </p>
-              </Link>
+            {categories.slice(0, 4).map((category, i) => (
+              <Reveal key={category.id} delay={i * 0.05}>
+                <Link
+                  href={`/produits?categorie=${category.slug}`}
+                  className="group block overflow-hidden rounded-xl border border-border transition-all duration-300 hover:-translate-y-1 hover:border-transparent hover:shadow-premium-lg"
+                >
+                  <div className="relative aspect-square bg-paper-muted">
+                    {category.image_url ? (
+                      <Image
+                        src={category.image_url}
+                        alt={category.name}
+                        fill
+                        sizes="(min-width: 640px) 25vw, 50vw"
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-ink-muted">
+                        <ImageOff className="h-6 w-6" aria-hidden="true" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="p-3.5 text-sm font-medium text-ink transition-colors group-hover:text-accent">
+                    {category.name}
+                  </p>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -121,13 +125,13 @@ export default async function HomePage() {
       {featuredProducts.length > 0 && (
         <section className="border-t border-border bg-paper-muted">
           <div className="container py-20">
-            <div className="mb-10 flex items-end justify-between">
+            <Reveal className="mb-10 flex items-end justify-between">
               <h2 className="font-display text-3xl">Nos coups de cœur</h2>
               <Link href="/produits" className="text-sm text-accent hover:underline">
                 Tout voir
               </Link>
-            </div>
-            <ProductGrid products={featuredProducts} />
+            </Reveal>
+            <ProductGrid products={featuredProducts} isAuthenticated={!!user} />
           </div>
         </section>
       )}
@@ -135,7 +139,7 @@ export default async function HomePage() {
       {/* Réassurance */}
       <section className="container py-20">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
-          <div className="text-center">
+          <Reveal className="text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
               <Sparkles className="h-6 w-6" aria-hidden="true" />
             </div>
@@ -143,8 +147,8 @@ export default async function HomePage() {
             <p className="mt-1.5 text-sm text-ink-muted">
               Des produits choisis pour leur qualité, pas leur volume.
             </p>
-          </div>
-          <div className="text-center">
+          </Reveal>
+          <Reveal delay={0.1} className="text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
               <MessageCircle className="h-6 w-6" aria-hidden="true" />
             </div>
@@ -152,14 +156,14 @@ export default async function HomePage() {
             <p className="mt-1.5 text-sm text-ink-muted">
               Chaque commande est finalisée directement avec toi sur WhatsApp.
             </p>
-          </div>
-          <div className="text-center">
+          </Reveal>
+          <Reveal delay={0.2} className="text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
               <Truck className="h-6 w-6" aria-hidden="true" />
             </div>
             <h3 className="mt-5 font-display text-lg">Livraison flexible</h3>
             <p className="mt-1.5 text-sm text-ink-muted">On s'adapte à ta ville et à ton quartier.</p>
-          </div>
+          </Reveal>
         </div>
       </section>
 

@@ -35,11 +35,15 @@ export default async function MyOrdersPage() {
         </div>
       ) : (
         <ul className="mt-6 space-y-3">
-          {orders.map((order) => (
-            <li key={order.id}>
+          {orders.map((order, i) => (
+            <li
+              key={order.id}
+              className="animate-fade-in-up"
+              style={{ animationDelay: `${Math.min(i, 8) * 60}ms`, animationFillMode: 'backwards' }}
+            >
               <Link
                 href={`/account/commandes/${order.id}`}
-                className="flex flex-col gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-paper-muted sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-xl border border-border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-transparent hover:shadow-premium sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
                   <p className="font-mono text-xs text-ink-muted">{orderReference(order.id)}</p>

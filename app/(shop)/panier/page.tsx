@@ -1,23 +1,34 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { ShoppingBag } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
 import { getCartItems } from '@/lib/data/cart'
-import { CartItemRow } from '@/components/shop/cart-item-row'
+import { CartItemsList } from '@/components/shop/cart-items-list'
 import { Button } from '@/components/ui/button'
 import { formatPrice, getEffectivePrice } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Mon panier' }
 
 export default async function CartPage() {
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/connexion?redirect=/panier')
+  }
+
   const items = await getCartItems()
   const subtotal = items.reduce(
     (sum, item) => sum + getEffectivePrice(item.product).price * item.quantity,
     0
   )
-  
+
   if (items.length === 0) {
     return (
-      <main className="container flex flex-col items-center gap-4 py-32 text-center">
+      <main className="container flex flex-col items-center gap-4 py-32 text-center animate-fade-in-up">
         <ShoppingBag className="h-10 w-10 text-ink-muted" aria-hidden="true" />
         <h1 className="font-display text-2xl">Ton panier est vide</h1>
         <p className="max-w-sm text-sm text-ink-muted">
@@ -29,19 +40,17 @@ export default async function CartPage() {
       </main>
     )
   }
-  
+
   return (
     <main className="container py-10">
       <h1 className="mb-8 font-display text-3xl">Mon panier</h1>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_20rem]">
-        <div>
-          {items.map((item) => (
-            <CartItemRow key={item.id} item={item} />
-          ))}
+        <div className="animate-fade-in-up">
+          <CartItemsList items={items} />
         </div>
 
-        <aside className="h-fit rounded-lg border border-border p-6">
+        <aside className="h-fit rounded-xl border border-border p-6 shadow-sm animate-fade-in-up [animation-delay:100ms]">
           <h2 className="font-display text-lg">Récapitulatif</h2>
 
           <div className="mt-4 flex items-center justify-between text-sm">

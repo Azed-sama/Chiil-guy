@@ -21,11 +21,7 @@ export default async function MarketingLayout({ children }: { children: React.Re
         storeName={settings.storeName}
       />
       <PageTransition>{children}</PageTransition>
-      <SiteFooter
-        storeName={settings.storeName}
-        storeDescription={settings.storeDescription}
-        whatsappNumber={settings.whatsappNumber}
-      />
+      <SiteFooter storeName={settings.storeName} />
     </>
   )
 }

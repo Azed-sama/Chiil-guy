@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Sparkles, Heart, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Reveal } from '@/components/layout/reveal'
 
 export const metadata: Metadata = {
   title: 'À propos',
@@ -58,14 +59,14 @@ export default function AboutPage() {
         <div className="container py-16">
           <h2 className="text-center font-display text-2xl">Ce qui nous anime</h2>
           <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
-            {VALUES.map((value) => (
-              <div key={value.title} className="text-center">
+            {VALUES.map((value, i) => (
+              <Reveal key={value.title} delay={i * 0.1} className="text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
                   <value.icon className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <h3 className="mt-4 font-display text-lg">{value.title}</h3>
                 <p className="mt-2 text-sm text-ink-muted">{value.description}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>

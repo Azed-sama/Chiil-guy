@@ -10,69 +10,58 @@ interface PaginationProps {
 }
 
 /**
- * Construit la liste des pages à afficher, avec troncature ("...")
- * quand il y a trop de pages. Garde toujours : la première page, la
- * dernière page, et une fenêtre de pages autour de la page courante.
- *
- * Exemple avec page=7, totalPages=20 :
- * [1, '...', 6, 7, 8, '...', 20]
+ * Construit une liste compacte de pages à afficher : toujours la
+ * première, la dernière, la page courante et ses voisines directes.
+ * Les trous sont représentés par `'ellipsis'`. Évite un débordement
+ * horizontal sur mobile quand il y a beaucoup de pages (ex: 40 pages
+ * n'affiche plus 40 boutons collés).
  */
-function getPageRange(page: number, totalPages: number): (number | '...')[] {
-  const siblingCount = 1
-  const totalVisible = siblingCount * 2 + 5 // premier + dernier + courante + 2 "..." potentiels
+function getPageRange(page: number, totalPages: number): (number | 'ellipsis')[] {
+  const range: (number | 'ellipsis')[] = []
+  const delta = 1
   
-  if (totalPages <= totalVisible) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
+  for (let p = 1; p <= totalPages; p++) {
+    const isEdge = p === 1 || p === totalPages
+    const isNearCurrent = Math.abs(p - page) <= delta
+    
+    if (isEdge || isNearCurrent) {
+      range.push(p)
+    } else if (range[range.length - 1] !== 'ellipsis') {
+      range.push('ellipsis')
+    }
   }
   
-  const leftSibling = Math.max(page - siblingCount, 1)
-  const rightSibling = Math.min(page + siblingCount, totalPages)
-  
-  const showLeftDots = leftSibling > 2
-  const showRightDots = rightSibling < totalPages - 1
-  
-  if (!showLeftDots && showRightDots) {
-    const leftRange = Array.from({ length: 3 + siblingCount * 2 }, (_, i) => i + 1)
-    return [...leftRange, '...', totalPages]
-  }
-  
-  if (showLeftDots && !showRightDots) {
-    const rightRangeLength = 3 + siblingCount * 2
-    const rightRange = Array.from({ length: rightRangeLength },
-      (_, i) => totalPages - rightRangeLength + i + 1
-    )
-    return [1, '...', ...rightRange]
-  }
-  
-  const middleRange = Array.from({ length: rightSibling - leftSibling + 1 }, (_, i) => leftSibling + i)
-  return [1, '...', ...middleRange, '...', totalPages]
+  return range
 }
 
 export function Pagination({ page, totalPages, searchParams }: PaginationProps) {
   if (totalPages <= 1) return null
   
-  const pageRange = getPageRange(page, totalPages)
+  const pages = getPageRange(page, totalPages)
   
   return (
-    <nav aria-label="Pagination du catalogue" className="mt-10 flex items-center justify-center gap-1.5">
+    <nav
+      aria-label="Pagination du catalogue"
+      className="mt-10 flex items-center justify-center gap-1 overflow-x-auto px-1 py-1"
+    >
       <Link
         href={buildHref('/produits', searchParams, { page: String(Math.max(1, page - 1)) })}
         aria-disabled={page === 1}
         aria-label="Page précédente"
         className={cn(
-          'flex h-9 w-9 items-center justify-center rounded border border-border transition-all duration-150 active:scale-95',
-          page === 1 ? 'pointer-events-none opacity-40' : 'hover:border-ink-muted hover:bg-paper-muted'
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border transition-colors sm:h-9 sm:w-9',
+          page === 1 ? 'pointer-events-none opacity-40' : 'hover:bg-paper-muted'
         )}
       >
         <ChevronLeft className="h-4 w-4" />
       </Link>
 
-      {pageRange.map((p, index) =>
-        p === '...' ? (
+      {pages.map((p, i) =>
+        p === 'ellipsis' ? (
           <span
-            key={`dots-${index}`}
+            key={`ellipsis-${i}`}
             aria-hidden="true"
-            className="flex h-9 w-9 items-center justify-center text-ink-muted"
+            className="flex h-10 w-10 shrink-0 items-center justify-center text-ink-muted sm:h-9 sm:w-9"
           >
             <MoreHorizontal className="h-4 w-4" />
           </span>
@@ -82,10 +71,10 @@ export function Pagination({ page, totalPages, searchParams }: PaginationProps) 
             href={buildHref('/produits', searchParams, { page: String(p) })}
             aria-current={p === page ? 'page' : undefined}
             className={cn(
-              'flex h-9 min-w-9 items-center justify-center rounded border px-2 text-sm transition-all duration-150 active:scale-95',
+              'flex h-10 min-w-10 shrink-0 items-center justify-center rounded-lg border px-2 text-sm transition-colors sm:h-9 sm:min-w-9',
               p === page
                 ? 'border-accent bg-accent text-accent-foreground'
-                : 'border-border hover:border-ink-muted hover:bg-paper-muted'
+                : 'border-border hover:bg-paper-muted'
             )}
           >
             {p}
@@ -98,8 +87,8 @@ export function Pagination({ page, totalPages, searchParams }: PaginationProps) 
         aria-disabled={page === totalPages}
         aria-label="Page suivante"
         className={cn(
-          'flex h-9 w-9 items-center justify-center rounded border border-border transition-all duration-150 active:scale-95',
-          page === totalPages ? 'pointer-events-none opacity-40' : 'hover:border-ink-muted hover:bg-paper-muted'
+          'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border transition-colors sm:h-9 sm:w-9',
+          page === totalPages ? 'pointer-events-none opacity-40' : 'hover:bg-paper-muted'
         )}
       >
         <ChevronRight className="h-4 w-4" />

@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton, ProductGridSkeleton } from '@/components/ui/skeleton'
 
 export default function CatalogLoading() {
   return (
@@ -17,18 +17,7 @@ export default function CatalogLoading() {
 
         <div>
           <Skeleton className="mb-6 h-4 w-24" />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="overflow-hidden rounded-lg border border-border">
-                <Skeleton className="aspect-square rounded-none" />
-                <div className="space-y-2 p-4">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-5 w-20" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProductGridSkeleton />
         </div>
       </div>
     </main>

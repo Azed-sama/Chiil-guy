@@ -27,7 +27,7 @@ export default async function CheckoutPage() {
           <ShippingForm />
         </div>
 
-        <aside className="h-fit rounded-lg border border-border p-6">
+        <aside className="h-fit rounded-xl border border-border p-6 shadow-sm">
           <h2 className="font-display text-lg">Récapitulatif</h2>
 
           <ul className="mt-4 space-y-3">

@@ -1,81 +1,70 @@
 import Link from 'next/link'
-import { MessageCircle } from 'lucide-react'
 
-interface SiteFooterProps {
-  storeName: string
-  storeDescription ? : string
-  whatsappNumber ? : string
-}
-
-const SHOP_LINKS = [
-  { href: '/produits', label: 'Tous les produits' },
+const EXPLORE_LINKS = [
+  { href: '/produits', label: 'Catalogue' },
   { href: '/a-propos', label: 'À propos' },
   { href: '/contact', label: 'Contact' },
 ]
 
-const ACCOUNT_LINKS = [
-  { href: '/account', label: 'Mon compte' },
-  { href: '/account/commandes', label: 'Mes commandes' },
-  { href: '/panier', label: 'Mon panier' },
+const LEGAL_LINKS = [
+  // Pages légales — à créer ultérieurement
+  { href: '#', label: 'Mentions légales' },
+  { href: '#', label: 'CGV' },
+  { href: '#', label: 'Confidentialité' },
 ]
 
-export function SiteFooter({ storeName, storeDescription, whatsappNumber }: SiteFooterProps) {
-  const year = new Date().getFullYear()
-  
+export function SiteFooter({ storeName }: { storeName: string }) {
   return (
-    <footer className="border-t border-border bg-paper-muted">
-      <div className="container py-14">
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
-          <div className="col-span-2">
-            <p className="font-display text-lg italic">{storeName}</p>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-muted">
-              {storeDescription || 'Une sélection soignée, livrée où que tu sois.'}
-            </p>
-            {whatsappNumber && (
-              <a
-                href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-2 text-sm text-accent transition-colors hover:text-ink"
-              >
-                <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                Discuter sur WhatsApp
-              </a>
-            )}
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">Boutique</p>
-            <ul className="mt-4 space-y-2.5">
-              {SHOP_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-ink-muted transition-colors hover:text-ink">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">Mon espace</p>
-            <ul className="mt-4 space-y-2.5">
-              {ACCOUNT_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-ink-muted transition-colors hover:text-ink">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <footer className="border-t border-border bg-paper-muted/40">
+      <div className="container grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="flex flex-col gap-3 lg:col-span-2 lg:pr-8">
+          <Link href="/" className="flex items-baseline gap-1 font-display text-xl italic">
+            {storeName}
+            <span className="text-gold" aria-hidden="true">.</span>
+          </Link>
+          <p className="max-w-sm text-sm leading-relaxed text-ink-muted">
+            Une sélection soignée, pensée pour durer. Livraison suivie et service client
+            attentif, du premier clic à la réception.
+          </p>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-border pt-6 text-xs text-ink-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink">Explorer</h3>
+          <nav className="flex flex-col gap-2.5" aria-label="Liens du pied de page">
+            {EXPLORE_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="w-fit text-sm text-ink-muted transition-colors hover:text-ink"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink">Légal</h3>
+          <nav className="flex flex-col gap-2.5" aria-label="Liens légaux">
+            {LEGAL_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="w-fit text-sm text-ink-muted transition-colors hover:text-ink"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      <div className="border-t border-border">
+        <div className="container flex flex-col items-center gap-2 py-6 text-xs text-ink-muted sm:flex-row sm:justify-between">
           <p>
-            © {year} {storeName}. Tous droits réservés.
+            © {new Date().getFullYear()} {storeName}. Tous droits réservés.
           </p>
-          <p className="text-ink-muted/70">Site en cours de développement.</p>
+          <p>Conçu avec soin.</p>
         </div>
       </div>
     </footer>

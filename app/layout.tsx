@@ -70,7 +70,16 @@ export default function RootLayout({
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
-          <Toaster position="top-center" richColors closeButton />
+          <Toaster
+            position="top-center"
+            richColors
+            closeButton
+            toastOptions={{
+              classNames: {
+                toast: 'rounded-xl border border-border shadow-premium-lg font-sans',
+              },
+            }}
+          />
         </ThemeProvider>
       </body>
     </html>

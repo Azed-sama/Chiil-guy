@@ -46,8 +46,9 @@ export function QuickAddButton({ productId, className }: QuickAddButtonProps) {
       disabled={state === 'pending'}
       aria-label="Ajouter au panier"
       className={cn(
-        'flex h-10 w-10 items-center justify-center rounded-full bg-paper text-ink shadow-md',
-        'transition-all duration-200 hover:scale-105 hover:bg-accent hover:text-accent-foreground',
+        'flex h-10 w-10 items-center justify-center rounded-full bg-paper text-ink shadow-premium',
+        'transition-all duration-200 ease-out hover:scale-110 hover:bg-accent hover:text-accent-foreground hover:shadow-glow',
+        'active:scale-95',
         'disabled:pointer-events-none disabled:opacity-70',
         className
       )}

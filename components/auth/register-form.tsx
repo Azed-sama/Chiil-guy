@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
-import { CheckCircle2, MailCheck } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { AlertCircle, CheckCircle2, MailCheck } from 'lucide-react'
 import { registerSchema, type RegisterInput } from '@/lib/validations/auth'
 import { signUp } from '@/app/(auth)/actions'
 import { Button } from '@/components/ui/button'
@@ -125,11 +126,21 @@ export function RegisterForm() {
         <FieldError id="confirmPassword-error" message={errors.confirmPassword?.message} />
       </div>
 
-      {serverError && (
-        <p role="alert" className="rounded bg-danger/10 px-3 py-2.5 text-sm text-danger">
-          {serverError}
-        </p>
-      )}
+      <AnimatePresence initial={false}>
+        {serverError && (
+          <motion.p
+            role="alert"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="flex items-center gap-2 overflow-hidden rounded-lg bg-danger/10 px-3 py-2.5 text-sm text-danger"
+          >
+            <AlertCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {serverError}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       <Button type="submit" className="w-full" isLoading={isSubmitting}>
         Créer mon compte

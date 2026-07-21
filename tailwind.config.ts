@@ -35,10 +35,25 @@ const config: Config = {
         mono: ['var(--font-mono)', 'monospace'],
       },
       borderRadius: {
-        sm: '0.25rem',
-        DEFAULT: '0.5rem',
-        lg: '0.75rem',
-        xl: '1rem',
+        xs: '0.375rem',
+        sm: '0.5rem',
+        DEFAULT: '0.625rem',
+        md: '0.75rem',
+        lg: '1rem',
+        xl: '1.25rem',
+        '2xl': '1.75rem',
+        '3xl': '2rem',
+      },
+      boxShadow: {
+        xs: '0 1px 2px 0 rgb(var(--color-ink) / 0.04)',
+        sm: '0 1px 3px 0 rgb(var(--color-ink) / 0.06), 0 1px 2px -1px rgb(var(--color-ink) / 0.06)',
+        DEFAULT:
+          '0 1px 3px 0 rgb(var(--color-ink) / 0.06), 0 1px 2px -1px rgb(var(--color-ink) / 0.06)',
+        premium:
+          '0 2px 8px -2px rgb(var(--color-ink) / 0.06), 0 12px 32px -8px rgb(var(--color-ink) / 0.12)',
+        'premium-lg':
+          '0 4px 16px -4px rgb(var(--color-ink) / 0.08), 0 24px 48px -12px rgb(var(--color-ink) / 0.16)',
+        glow: '0 0 0 1px rgb(var(--color-accent) / 0.12), 0 8px 24px -6px rgb(var(--color-accent) / 0.28)',
       },
       keyframes: {
         'fade-in': {
@@ -64,7 +79,12 @@ const config: Config = {
           '75%': { transform: 'scale(1.15) rotate(-4deg)' },
         },
         shimmer: {
-          '100%': { transform: 'translateX(100%)' },
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        'scale-in': {
+          from: { opacity: '0', transform: 'scale(0.96)' },
+          to: { opacity: '1', transform: 'scale(1)' },
         },
       },
       animation: {
@@ -73,7 +93,8 @@ const config: Config = {
         'fade-in-left': 'fade-in-left 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
         float: 'float 6s ease-in-out infinite',
         'cart-pulse': 'cart-pulse 0.5s ease-in-out',
-        shimmer: 'shimmer 2s infinite',
+        shimmer: 'shimmer 2s ease-in-out infinite',
+        'scale-in': 'scale-in 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
       },
     },
   },

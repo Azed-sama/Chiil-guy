@@ -8,13 +8,9 @@ import type { ProductWithRelations } from '@/lib/data/products'
 
 interface ProductCardProps {
   product: ProductWithRelations
-  /** À passer à `true` uniquement pour les toutes premières cartes
-   *  visibles au chargement (au-dessus de la ligne de flottaison),
-   *  pour améliorer le LCP. Ne jamais l'utiliser pour toute une grille. */
-  priority ? : boolean
 }
 
-export function ProductCard({ product, priority = false }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { price, originalPrice, isOnSale, discountPercent } = getEffectivePrice(product)
   const cover = product.images[0]
   const isOutOfStock = product.stock_quantity <= 0
@@ -23,9 +19,9 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     <Link
       href={`/produits/${product.slug}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-lg border border-border bg-paper',
-        'transition-all duration-300 ease-out',
-        'hover:-translate-y-1 hover:border-transparent hover:shadow-xl hover:shadow-ink/10'
+        'group relative flex flex-col overflow-hidden rounded-xl border border-border bg-paper',
+        'transition-all duration-300 ease-out will-change-transform',
+        'hover:-translate-y-1.5 hover:border-transparent hover:shadow-premium-lg'
       )}
     >
       <div className="relative aspect-square overflow-hidden bg-paper-muted">
@@ -35,8 +31,6 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             alt={cover.alt_text || product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-            priority={priority}
-            loading={priority ? undefined : 'lazy'}
             className={cn(
               'object-cover transition-transform duration-700 ease-out group-hover:scale-110',
               isOutOfStock && 'opacity-60 grayscale'
@@ -88,7 +82,9 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         </h3>
 
         <div className="mt-auto flex items-baseline gap-2 pt-2">
-          <span className="font-display text-lg">{formatPrice(price)}</span>
+          <span className={cn('font-display text-lg', isOnSale && 'text-danger')}>
+            {formatPrice(price)}
+          </span>
           {isOnSale && (
             <span className="text-sm text-ink-muted line-through">{formatPrice(originalPrice)}</span>
           )}
