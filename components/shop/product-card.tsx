@@ -8,13 +8,17 @@ import type { ProductWithRelations } from '@/lib/data/products'
 
 interface ProductCardProps {
   product: ProductWithRelations
+  /** À passer à `true` uniquement pour les toutes premières cartes
+   *  visibles au chargement (au-dessus de la ligne de flottaison),
+   *  pour améliorer le LCP. Ne jamais l'utiliser pour toute une grille. */
+  priority ? : boolean
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, priority = false }: ProductCardProps) {
   const { price, originalPrice, isOnSale, discountPercent } = getEffectivePrice(product)
   const cover = product.images[0]
   const isOutOfStock = product.stock_quantity <= 0
-
+  
   return (
     <Link
       href={`/produits/${product.slug}`}
@@ -31,6 +35,8 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={cover.alt_text || product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+            priority={priority}
+            loading={priority ? undefined : 'lazy'}
             className={cn(
               'object-cover transition-transform duration-700 ease-out group-hover:scale-110',
               isOutOfStock && 'opacity-60 grayscale'

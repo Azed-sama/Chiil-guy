@@ -5,10 +5,9 @@ import type { ProductWithRelations } from '@/lib/data/products'
 
 interface ProductGridProps {
   products: ProductWithRelations[]
-  isAuthenticated ? : boolean
 }
 
-export function ProductGrid({ products, isAuthenticated = false }: ProductGridProps) {
+export function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border py-24 text-center">
@@ -23,8 +22,8 @@ export function ProductGrid({ products, isAuthenticated = false }: ProductGridPr
   
   return (
     <AnimatedGrid>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} isAuthenticated={isAuthenticated} />
+      {products.map((product, index) => (
+        <ProductCard key={product.id} product={product} priority={index < 4} />
       ))}
     </AnimatedGrid>
   )

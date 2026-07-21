@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { getProducts, type ProductSort } from '@/lib/data/products'
 import { getCategories } from '@/lib/data/categories'
-import { getCurrentUser } from '@/lib/data/auth'
 import { ProductGrid } from '@/components/shop/product-grid'
 import { ProductFilters } from '@/components/shop/product-filters'
 import { Pagination } from '@/components/shop/pagination'
@@ -31,7 +30,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     (searchParams.tri as ProductSort) :
     undefined
   
-  const [{ products, count, pageSize }, categories, { user }] = await Promise.all([
+  const [{ products, count, pageSize }, categories] = await Promise.all([
     getProducts({
       q: searchParams.q,
       categorie: searchParams.categorie,
@@ -41,7 +40,6 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       page,
     }),
     getCategories(),
-    getCurrentUser(),
   ])
   
   const totalPages = Math.max(1, Math.ceil(count / pageSize))
@@ -89,7 +87,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           <p className="mb-6 text-sm text-ink-muted">
             {count} produit{count > 1 ? 's' : ''}
           </p>
-          <ProductGrid products={products} isAuthenticated={!!user} />
+          <ProductGrid products={products} />
           <Pagination page={page} totalPages={totalPages} searchParams={searchParams} />
         </div>
       </div>

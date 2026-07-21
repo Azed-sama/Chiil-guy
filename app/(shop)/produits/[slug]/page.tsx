@@ -157,7 +157,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {relatedProducts.length > 0 && (
         <section className="mt-20 border-t border-border pt-12">
           <h2 className="mb-6 font-display text-2xl">Produits similaires</h2>
-          <ProductGrid products={relatedProducts} isAuthenticated={!!user} />
+          <ProductGrid products={relatedProducts} />
         </section>
       )}
     </main>
