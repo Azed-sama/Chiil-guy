@@ -183,77 +183,77 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden border-t border-border bg-paper md:hidden"
           >
-          <nav className="container flex flex-col gap-1 py-3" aria-label="Navigation principale">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className={cn(
-                  'rounded px-2 py-2.5 text-sm transition-colors hover:bg-paper-muted',
-                  pathname === link.href ? 'font-medium text-ink' : 'text-ink-muted'
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+            <nav className="container flex flex-col gap-1 py-3" aria-label="Navigation principale">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className={cn(
+                    'rounded px-2 py-2.5 text-sm transition-colors hover:bg-paper-muted',
+                    pathname === link.href ? 'font-medium text-ink' : 'text-ink-muted'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
 
-            <div className="my-2 border-t border-border" />
+              <div className="my-2 border-t border-border" />
 
-            {isAuthenticated ? (
-              <>
-                {isAdmin && (
+              {isAuthenticated ? (
+                <>
+                  {isAdmin && (
+                    <Link
+                      href="/admin/orders"
+                      onClick={() => setMenuOpen(false)}
+                      className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
+                    >
+                      Administration
+                    </Link>
+                  )}
                   <Link
-                    href="/admin/orders"
+                    href="/account"
                     onClick={() => setMenuOpen(false)}
                     className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
                   >
-                    Administration
+                    Mon compte
                   </Link>
-                )}
-                <Link
-                  href="/account"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
-                >
-                  Mon compte
-                </Link>
-                <form action={signOut}>
-                  <button
-                    type="submit"
-                    className="flex w-full items-center gap-2 rounded px-2 py-2.5 text-left text-sm text-ink-muted hover:bg-paper-muted"
+                  <form action={signOut}>
+                    <button
+                      type="submit"
+                      className="flex w-full items-center gap-2 rounded px-2 py-2.5 text-left text-sm text-ink-muted hover:bg-paper-muted"
+                    >
+                      <LogOut className="h-4 w-4" aria-hidden="true" />
+                      Se déconnecter
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/connexion"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
                   >
-                    <LogOut className="h-4 w-4" aria-hidden="true" />
-                    Se déconnecter
-                  </button>
-                </form>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/connexion"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded px-2 py-2.5 text-sm text-ink-muted hover:bg-paper-muted"
-                >
-                  Se connecter
-                </Link>
-                <Link
-                  href="/inscription"
-                  onClick={() => setMenuOpen(false)}
-                  className="rounded px-2 py-2.5 text-sm font-medium text-accent hover:bg-paper-muted"
-                >
-                  Créer un compte
-                </Link>
-              </>
-            )}
+                    Se connecter
+                  </Link>
+                  <Link
+                    href="/inscription"
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded px-2 py-2.5 text-sm font-medium text-accent hover:bg-paper-muted"
+                  >
+                    Créer un compte
+                  </Link>
+                </>
+              )}
 
-            <div className="my-2 border-t border-border" />
+              <div className="my-2 border-t border-border" />
 
-            <div className="flex items-center justify-between px-2 py-1">
-              <span className="text-sm text-ink-muted">Thème</span>
-              <ThemeToggle />
-            </div>
-          </nav>
+              <div className="flex items-center justify-between px-2 py-1">
+                <span className="text-sm text-ink-muted">Thème</span>
+                <ThemeToggle />
+              </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>
