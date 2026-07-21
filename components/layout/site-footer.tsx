@@ -32,7 +32,7 @@ export function SiteFooter({ storeName, storeDescription, whatsappNumber }: Site
               {storeDescription || 'Une sélection soignée, livrée où que tu sois.'}
             </p>
             {whatsappNumber && (
-              
+              <a
                 href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
