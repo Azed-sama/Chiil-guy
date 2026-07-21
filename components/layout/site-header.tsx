@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { LogOut, Menu, ShoppingBag, X } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { LogOut, Menu, Search, ShoppingBag, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { signOut } from '@/app/(auth)/actions'
@@ -16,10 +16,73 @@ const NAV_LINKS = [
   { href: '/contact', label: 'Contact' },
 ]
 
+function HeaderSearch({ className }: { className?: string }) {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (open) inputRef.current?.focus()
+  }, [open])
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const query = inputRef.current?.value.trim()
+    setOpen(false)
+    if (query) {
+      router.push(`/produits?q=${encodeURIComponent(query)}`)
+    }
+  }
+
+  if (!open) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        aria-label="Rechercher un produit"
+        className={className}
+      >
+        <Search className="h-4 w-4" />
+      </Button>
+    )
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className={cn('flex items-center gap-1 animate-fade-in-left', className)}
+      role="search"
+    >
+      <div className="relative">
+        <Search
+          className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-muted"
+          aria-hidden="true"
+        />
+        <input
+          ref={inputRef}
+          type="search"
+          name="q"
+          placeholder="Rechercher..."
+          className="h-9 w-40 rounded border border-border bg-paper pl-8 pr-2 text-sm text-ink placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:border-accent sm:w-56"
+          onBlur={(e) => {
+            // Referme si le champ est vide et perd le focus
+            if (!e.currentTarget.value) setOpen(false)
+          }}
+        />
+      </div>
+      <Button type="button" variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Fermer la recherche">
+        <X className="h-4 w-4" />
+      </Button>
+    </form>
+  )
+}
+
 function CartButton({ cartCount }: { cartCount: number }) {
   const [pulse, setPulse] = useState(false)
   const previousCount = useRef(cartCount)
-  
+
   useEffect(() => {
     if (cartCount > previousCount.current) {
       setPulse(true)
@@ -29,7 +92,7 @@ function CartButton({ cartCount }: { cartCount: number }) {
     }
     previousCount.current = cartCount
   }, [cartCount])
-  
+
   return (
     <Button
       asChild
@@ -53,14 +116,14 @@ function CartButton({ cartCount }: { cartCount: number }) {
             </span>
           )}
         </span>
-      </Link> 
+      </Link>
     </Button>
   )
 }
 
 function useScrolled(threshold = 8) {
   const [scrolled, setScrolled] = useState(false)
-  
+
   useEffect(() => {
     function onScroll() {
       setScrolled(window.scrollY > threshold)
@@ -69,13 +132,13 @@ function useScrolled(threshold = 8) {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [threshold])
-  
+
   return scrolled
 }
 
 interface SiteHeaderProps {
   isAuthenticated: boolean
-  isAdmin ? : boolean
+  isAdmin?: boolean
   cartCount: number
   storeName: string
 }
@@ -84,7 +147,7 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
   const scrolled = useScrolled()
-  
+
   return (
     <header
       className={cn(
@@ -120,6 +183,7 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
 
         {/* Actions desktop */}
         <div className="hidden items-center gap-1 md:flex">
+          <HeaderSearch />
           <CartButton cartCount={cartCount} />
 
           {isAuthenticated ? (
@@ -172,6 +236,19 @@ export function SiteHeader({ isAuthenticated, isAdmin, cartCount, storeName }: S
       {menuOpen && (
         <div className="border-t border-border bg-paper md:hidden">
           <nav className="container flex flex-col gap-1 py-3" aria-label="Navigation principale">
+            <form action="/produits" method="get" role="search" className="relative mb-2">
+              <Search
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                name="q"
+                placeholder="Rechercher un produit..."
+                className="h-11 w-full rounded border border-border bg-paper pl-9 pr-3 text-sm text-ink placeholder:text-ink-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:border-accent"
+              />
+            </form>
+
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}

@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "supabase:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > types/supabase.ts"
   },
-  "dependencies": {
+  "dependencies": { "framer-motion": "^11.3.24",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1",

@@ -63,6 +63,9 @@ const config: Config = {
           '50%': { transform: 'scale(1.1) rotate(6deg)' },
           '75%': { transform: 'scale(1.15) rotate(-4deg)' },
         },
+        shimmer: {
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
       animation: {
         'fade-in': 'fade-in 0.3s ease-out',
@@ -70,6 +73,7 @@ const config: Config = {
         'fade-in-left': 'fade-in-left 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
         float: 'float 6s ease-in-out infinite',
         'cart-pulse': 'cart-pulse 0.5s ease-in-out',
+        shimmer: 'shimmer 2s infinite',
       },
     },
   },

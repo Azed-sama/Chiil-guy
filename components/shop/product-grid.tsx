@@ -1,5 +1,6 @@
 import { SearchX } from 'lucide-react'
 import { ProductCard } from '@/components/shop/product-card'
+import { AnimatedGrid } from '@/components/shop/animated-grid'
 import type { ProductWithRelations } from '@/lib/data/products'
 
 interface ProductGridProps {
@@ -21,10 +22,10 @@ export function ProductGrid({ products, isAuthenticated = false }: ProductGridPr
   }
   
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4">
+    <AnimatedGrid>
       {products.map((product) => (
         <ProductCard key={product.id} product={product} isAuthenticated={isAuthenticated} />
       ))}
-    </div>
+    </AnimatedGrid>
   )
 }

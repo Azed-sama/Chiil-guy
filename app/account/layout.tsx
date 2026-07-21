@@ -26,7 +26,11 @@ export default async function AccountLayout({ children }: { children: React.Reac
           <div>{children}</div>
         </div>
       </div>
-      <SiteFooter storeName={settings.storeName} />
+      <SiteFooter
+        storeName={settings.storeName}
+        storeDescription={settings.storeDescription}
+        whatsappNumber={settings.whatsappNumber}
+      />
     </>
   )
 }

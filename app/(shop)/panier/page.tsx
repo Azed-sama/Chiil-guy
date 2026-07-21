@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
 import { ShoppingBag } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
 import { getCartItems } from '@/lib/data/cart'
 import { CartItemRow } from '@/components/shop/cart-item-row'
 import { Button } from '@/components/ui/button'
@@ -11,21 +9,12 @@ import { formatPrice, getEffectivePrice } from '@/lib/utils'
 export const metadata: Metadata = { title: 'Mon panier' }
 
 export default async function CartPage() {
-  const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/connexion?redirect=/panier')
-  }
-
   const items = await getCartItems()
   const subtotal = items.reduce(
     (sum, item) => sum + getEffectivePrice(item.product).price * item.quantity,
     0
   )
-
+  
   if (items.length === 0) {
     return (
       <main className="container flex flex-col items-center gap-4 py-32 text-center">
@@ -40,7 +29,7 @@ export default async function CartPage() {
       </main>
     )
   }
-
+  
   return (
     <main className="container py-10">
       <h1 className="mb-8 font-display text-3xl">Mon panier</h1>
