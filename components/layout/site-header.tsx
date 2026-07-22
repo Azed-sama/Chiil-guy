@@ -54,8 +54,8 @@ function CartButton({ cartCount }: { cartCount: number }) {
             </span>
           )}
         </span>
-      </Link> <
-    /Button>
+      </Link> 
+    </Button>
   )
 }
 
