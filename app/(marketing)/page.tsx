@@ -43,7 +43,7 @@ export default async function HomePage() {
           <circle cx="200" cy="200" r="80" stroke="white" strokeWidth="1" />
         </svg>
 
-        <div className="container relative flex flex-col items-center gap-7 py-28 text-center sm:py-36">
+        <div className="container relative flex flex-col items-center gap-7 py-16 text-center sm:py-24">
           <p className="animate-fade-in-up font-mono text-xs uppercase tracking-[0.2em] text-gold">
             Nouvelle collection
           </p>
@@ -76,6 +76,25 @@ export default async function HomePage() {
                 </span>
               </a>
             </Button>
+          </div>
+
+          {/* Indicateur de scroll : signale qu'il y a du contenu en dessous */}
+          <div
+            className="mt-4 flex animate-fade-in-up flex-col items-center gap-1.5 text-paper/40 [animation-delay:300ms]"
+            aria-hidden="true"
+          >
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em]">Défiler</span>
+            <svg
+              className="h-4 w-4 animate-bounce"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 5v14M5 12l7 7 7-7" />
+            </svg>
           </div>
         </div>
       </section>
