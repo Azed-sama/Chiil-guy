@@ -43,14 +43,14 @@ export default async function HomePage() {
           <circle cx="200" cy="200" r="80" stroke="white" strokeWidth="1" />
         </svg>
 
-        <div className="container relative flex flex-col items-center gap-7 py-16 text-center sm:py-24">
+        <div className="container relative flex flex-col items-center gap-5 py-12 text-center sm:gap-7 sm:py-24">
           <p className="animate-fade-in-up font-mono text-xs uppercase tracking-[0.2em] text-gold">
             Nouvelle collection
           </p>
-          <h1 className="max-w-3xl animate-fade-in-up font-display text-6xl italic leading-[1.02] balance text-paper [animation-delay:75ms] sm:text-7xl">
+          <h1 className="max-w-3xl animate-fade-in-up font-display text-4xl italic leading-[1.05] balance text-paper [animation-delay:75ms] sm:text-7xl">
             Des essentiels pensés pour durer.
           </h1>
-          <p className="max-w-md animate-fade-in-up text-paper/70 [animation-delay:150ms]">
+          <p className="max-w-md animate-fade-in-up text-sm text-paper/70 [animation-delay:150ms] sm:text-base">
             Une sélection soignée, livrée où que tu sois. Commande en quelques clics, on s'occupe du
             reste.
           </p>
@@ -80,12 +80,12 @@ export default async function HomePage() {
 
           {/* Indicateur de scroll : signale qu'il y a du contenu en dessous */}
           <div
-            className="mt-4 flex animate-fade-in-up flex-col items-center gap-1.5 text-paper/40 [animation-delay:300ms]"
+            className="mt-1 flex animate-fade-in-up flex-col items-center gap-1 text-paper/40 [animation-delay:300ms] sm:mt-3 sm:gap-1.5"
             aria-hidden="true"
           >
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em]">Défiler</span>
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] sm:text-[10px]">Défiler</span>
             <svg
-              className="h-4 w-4 animate-bounce"
+              className="h-3.5 w-3.5 animate-bounce sm:h-4 sm:w-4"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
