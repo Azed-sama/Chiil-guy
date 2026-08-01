@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { PackageSearch } from 'lucide-react'
 import { getAllOrders } from '@/lib/data/admin/orders'
 import { OrderStatusBadge } from '@/components/admin/order-status-badge'
@@ -60,6 +61,9 @@ export default async function AdminOrdersPage() {
                     Modifier
                   </th>
                   <th scope="col" className="px-4 py-3 font-medium">
+                    <span className="sr-only">Voir</span>
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
                     <span className="sr-only">Supprimer</span>
                   </th>
                 </tr>
@@ -90,6 +94,14 @@ export default async function AdminOrdersPage() {
                       <OrderStatusSelect orderId={order.id} status={order.status} />
                     </td>
                     <td className="px-4 py-3">
+                      <Link
+                        href={`/admin/orders/${order.id}`}
+                        className="text-sm text-accent hover:underline"
+                      >
+                        Voir
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
                       <DeleteOrderButton orderId={order.id} />
                     </td>
                   </tr>
@@ -103,11 +115,11 @@ export default async function AdminOrdersPage() {
             {orders.map((order) => (
               <div key={order.id} className="rounded-lg border border-border p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <div>
+                  <Link href={`/admin/orders/${order.id}`} className="min-w-0">
                     <p className="font-mono text-xs text-ink-muted">{orderReference(order.id)}</p>
                     <p className="mt-0.5 font-medium text-ink">{order.customerName}</p>
                     {order.contactPhone && <p className="text-xs text-ink-muted">{order.contactPhone}</p>}
-                  </div>
+                  </Link>
                   <OrderStatusBadge status={order.status} />
                 </div>
 
@@ -126,6 +138,13 @@ export default async function AdminOrdersPage() {
                   </div>
                   <DeleteOrderButton orderId={order.id} />
                 </div>
+
+                <Link
+                  href={`/admin/orders/${order.id}`}
+                  className="mt-3 block text-center text-sm text-accent hover:underline"
+                >
+                  Voir le détail
+                </Link>
               </div>
             ))}
           </div>

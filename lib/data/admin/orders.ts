@@ -66,3 +66,84 @@ export async function getAllOrders(): Promise<AdminOrderListItem[]> {
     createdAt: order.created_at,
   }))
 }
+
+export interface AdminOrderItemDetail {
+  id: string
+  productName: string
+  productImageUrl: string | null
+  unitPrice: number
+  quantity: number
+  subtotal: number
+}
+
+export interface AdminOrderDetail {
+  id: string
+  status: OrderStatus
+  subtotal: number
+  shippingCost: number
+  totalAmount: number
+  shippingAddress: unknown
+  contactEmail: string | null
+  contactPhone: string | null
+  notes: string | null
+  customerName: string
+  createdAt: string
+  items: AdminOrderItemDetail[]
+}
+
+/**
+ * Détail complet d'une commande (infos client, adresse, articles) pour
+ * la page admin de détail et pour la génération du reçu PDF.
+ *
+ * Protégée par le RLS (`orders_select_admin`) et par le middleware qui
+ * bloque déjà /admin aux non-admins.
+ */
+export async function getOrderById(orderId: string): Promise<AdminOrderDetail | null> {
+  const supabase = createClient()
+
+  const { data: order, error } = await supabase
+    .from('orders')
+    .select(
+      'id, user_id, status, subtotal, shipping_cost, total_amount, shipping_address, contact_email, contact_phone, notes, created_at'
+    )
+    .eq('id', orderId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('getOrderById error:', error.message)
+    return null
+  }
+  if (!order) return null
+
+  const [{ data: profile }, { data: orderItems }] = await Promise.all([
+    order.user_id
+      ? supabase.from('profiles').select('full_name').eq('id', order.user_id).maybeSingle()
+      : Promise.resolve({ data: null as { full_name: string | null } | null }),
+    supabase
+      .from('order_items')
+      .select('id, product_name, product_image_url, unit_price, quantity, subtotal')
+      .eq('order_id', orderId),
+  ])
+
+  return {
+    id: order.id,
+    status: order.status,
+    subtotal: order.subtotal,
+    shippingCost: order.shipping_cost,
+    totalAmount: order.total_amount,
+    shippingAddress: order.shipping_address,
+    contactEmail: order.contact_email,
+    contactPhone: order.contact_phone,
+    notes: order.notes,
+    customerName: profile?.full_name || 'Client',
+    createdAt: order.created_at,
+    items: (orderItems ?? []).map((item) => ({
+      id: item.id,
+      productName: item.product_name,
+      productImageUrl: item.product_image_url,
+      unitPrice: item.unit_price,
+      quantity: item.quantity,
+      subtotal: item.subtotal,
+    })),
+  }
+}
