@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               Retour au site
             </Link>
-            <Link href="/admin/orders" className="truncate font-display text-lg italic">
+            <Link href="/admin" className="truncate font-display text-lg italic">
               Administration
             </Link>
           </div>
@@ -27,6 +27,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           className="container flex gap-5 overflow-x-auto border-t border-border py-3 text-sm"
           aria-label="Navigation admin"
         >
+          <Link href="/admin" className="shrink-0 text-ink hover:text-accent">
+            Tableau de bord
+          </Link>
           <Link href="/admin/orders" className="shrink-0 text-ink hover:text-accent">
             Commandes
           </Link>
