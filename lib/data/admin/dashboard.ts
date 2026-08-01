@@ -5,6 +5,10 @@ export interface DashboardStats {
   salesThisWeek: number
   salesThisMonth: number
   pendingOrdersCount: number
+  totalOrdersCount: number
+  publishedProductsCount: number
+  lowStockProductsCount: number
+  usersCount: number
   topProducts: { productName: string; totalQuantity: number; totalRevenue: number }[]
 }
 
@@ -32,11 +36,14 @@ function startOfMonthIso(date: Date): string {
 // annulées/remboursées des totaux de chiffre d'affaires).
 const REVENUE_STATUSES = ['paid', 'processing', 'shipped', 'delivered']
 
+// Seuil en dessous duquel un produit est considéré "en rupture / stock bas".
+const LOW_STOCK_THRESHOLD = 3
+
 /**
  * Statistiques clés pour le tableau de bord admin : ventes sur
- * différentes périodes, commandes en attente, et produits les plus
- * vendus (calculé sur les order_items des 90 derniers jours pour
- * rester pertinent et limiter le volume de données).
+ * différentes périodes, commandes (total + en attente), produits
+ * (publiés + stock bas), utilisateurs, et top produits vendus sur
+ * les 90 derniers jours.
  *
  * Protégée par le RLS (`orders_select_admin`) et le middleware admin.
  */
@@ -49,20 +56,35 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const monthIso = startOfMonthIso(now)
   const ninetyDaysAgoIso = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [{ data: monthOrders, error: monthError }, { count: pendingCount }, { data: recentItems }] =
-    await Promise.all([
-      supabase
-        .from('orders')
-        .select('total_amount, status, created_at')
-        .gte('created_at', monthIso)
-        .in('status', REVENUE_STATUSES),
-      supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-      supabase
-        .from('order_items')
-        .select('product_name, quantity, subtotal, orders!inner(status, created_at)')
-        .gte('orders.created_at', ninetyDaysAgoIso)
-        .in('orders.status', REVENUE_STATUSES),
-    ])
+  const [
+    { data: monthOrders, error: monthError },
+    { count: pendingCount },
+    { count: totalOrdersCount },
+    { count: publishedProductsCount },
+    { count: lowStockProductsCount },
+    { count: usersCount },
+    { data: recentItems },
+  ] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('total_amount, status, created_at')
+      .gte('created_at', monthIso)
+      .in('status', REVENUE_STATUSES),
+    supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('orders').select('id', { count: 'exact', head: true }),
+    supabase.from('products').select('id', { count: 'exact', head: true }).eq('is_active', true),
+    supabase
+      .from('products')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_active', true)
+      .lte('stock_quantity', LOW_STOCK_THRESHOLD),
+    supabase.from('profiles').select('id', { count: 'exact', head: true }),
+    supabase
+      .from('order_items')
+      .select('product_name, quantity, subtotal, orders!inner(status, created_at)')
+      .gte('orders.created_at', ninetyDaysAgoIso)
+      .in('orders.status', REVENUE_STATUSES),
+  ])
 
   if (monthError) {
     console.error('getDashboardStats error:', monthError.message)
@@ -96,6 +118,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     salesThisWeek,
     salesThisMonth,
     pendingOrdersCount: pendingCount ?? 0,
+    totalOrdersCount: totalOrdersCount ?? 0,
+    publishedProductsCount: publishedProductsCount ?? 0,
+    lowStockProductsCount: lowStockProductsCount ?? 0,
+    usersCount: usersCount ?? 0,
     topProducts,
   }
 }

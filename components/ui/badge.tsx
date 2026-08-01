@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium',
+  'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium',
   {
     variants: {
       variant: {
@@ -18,10 +18,30 @@ const badgeVariants = cva(
   }
 )
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+const dotVariants = cva('h-1.5 w-1.5 shrink-0 rounded-full', {
+  variants: {
+    variant: {
+      gold: 'bg-gold',
+      accent: 'bg-accent',
+      success: 'bg-success',
+      danger: 'bg-danger',
+      neutral: 'bg-ink-muted',
+    },
+  },
+  defaultVariants: { variant: 'neutral' },
+})
 
-export function Badge({ className, variant, ...props }: BadgeProps) {
-  return <span className={cn(badgeVariants({ variant }), className)} {...props} />
+export interface BadgeProps
+extends React.HTMLAttributes < HTMLSpanElement > ,
+  VariantProps < typeof badgeVariants > {
+    showDot ? : boolean
+  }
+
+export function Badge({ className, variant, showDot = true, children, ...props }: BadgeProps) {
+  return (
+    <span className={cn(badgeVariants({ variant }), className)} {...props}>
+      {showDot && <span className={dotVariants({ variant })} aria-hidden="true" />}
+      {children}
+    </span>
+  )
 }
