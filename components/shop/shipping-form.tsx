@@ -52,20 +52,6 @@ export function ShippingForm() {
       </div>
 
       <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          placeholder="pour le suivi de ta commande"
-          aria-invalid={!!errors.email}
-          aria-describedby={errors.email ? 'email-error' : undefined}
-          {...register('email')}
-        />
-        <FieldError id="email-error" message={errors.email?.message} />
-      </div>
-
-      <div>
         <Label htmlFor="phone">Numéro de téléphone</Label>
         <Input
           id="phone"

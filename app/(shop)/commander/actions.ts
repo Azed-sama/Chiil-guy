@@ -54,7 +54,7 @@ export async function createOrder(input: ShippingInfoInput): Promise < CreateOrd
       city: parsed.data.city,
       address: parsed.data.address,
     },
-    contact_email: parsed.data.email,
+    contact_email: null,
     contact_phone: parsed.data.phone,
     notes: parsed.data.notes || null,
   })
@@ -91,9 +91,7 @@ export async function createOrder(input: ShippingInfoInput): Promise < CreateOrd
   const settings = await getSiteSettings()
   const orderReference = order.id.slice(0, 8).toUpperCase()
   
-  const lines = items.map(
-    (item) => `- ${item.quantity} × ${item.product.name}`
-  )
+  const lines = items.map((item) => `- ${item.quantity} × ${item.product.name}`)
   const message = [
       `Bonjour, je souhaite finaliser ma commande ${orderReference} :`,
       ...lines,
