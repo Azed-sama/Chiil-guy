@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { PackageSearch } from 'lucide-react'
 import { getAllOrders } from '@/lib/data/admin/orders'
 import { OrderStatusBadge } from '@/components/admin/order-status-badge'
 import { OrderStatusSelect } from '@/components/admin/order-status-select'
@@ -35,7 +34,6 @@ export default async function AdminOrdersPage() {
       {orders.length === 0 ? (
         <div className="mt-6">
           <AdminEmptyState
-            icon={PackageSearch}
             title="Aucune commande pour le moment"
             description="Dès qu'un client passera commande sur la boutique, elle apparaîtra ici avec tous les détails nécessaires pour la traiter."
           />
